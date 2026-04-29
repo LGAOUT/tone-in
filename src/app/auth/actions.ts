@@ -43,3 +43,35 @@ export async function logout() {
   await supabase.auth.signOut()
   redirect('/login')
 }
+
+export async function updateProfile(formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Non connecté' }
+
+  const skillsRaw = formData.get('skills') as string
+  const skills = skillsRaw
+    ? skillsRaw.split(',').map(s => s.trim()).filter(Boolean)
+    : []
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      full_name: formData.get('full_name') as string,
+      username: formData.get('username') as string,
+      bio: formData.get('bio') as string,
+      role: formData.get('role') as string,
+      badge_level: formData.get('badge_level') as string,
+      website_url: formData.get('website_url') as string,
+      avatar_url: formData.get('avatar_url') as string,
+      skills,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', user.id)
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/profile')
+  revalidatePath(`/profile/${formData.get('username')}`)
+  return { success: true }
+}
