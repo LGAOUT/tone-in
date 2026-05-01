@@ -62,6 +62,16 @@ export default async function ProfilePage({
               Modifier
             </Link>
           )}
+
+          {!isOwner && user && (
+            <Link
+              href={`/messages/${profile.id}`}
+              className="bg-violet-600 hover:bg-violet-500 text-white text-sm px-4 py-2 rounded-xl transition-colors flex-shrink-0"
+            >
+              Message
+            </Link>
+          )}
+
         </div>
 
         {/* Bio */}
