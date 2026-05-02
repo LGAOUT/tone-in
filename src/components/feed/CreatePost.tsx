@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createPost } from '@/app/posts/actions'
-import { ImageIcon, X } from 'lucide-react'
+import { ImageIcon, Music, X } from 'lucide-react'
 
 type Props = {
   username: string
@@ -12,38 +12,51 @@ type Props = {
 export function CreatePost({ username, avatarUrl }: Props) {
   const [content, setContent] = useState('')
   const [mediaUrl, setMediaUrl] = useState('')
+  const [mediaType, setMediaType] = useState('')
+  const [mediaName, setMediaName] = useState('')
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(false)
-  const fileRef = useRef<HTMLInputElement>(null)
+  const imageRef = useRef<HTMLInputElement>(null)
+  const audioRef = useRef<HTMLInputElement>(null)
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+  async function handleUpload(file: File, type: 'image' | 'audio') {
     setUploading(true)
+    const preset = type === 'image'
+      ? process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+      : process.env.NEXT_PUBLIC_CLOUDINARY_AUDIO_PRESET!
 
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!)
+    formData.append('upload_preset', preset)
 
     const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`,
       { method: 'POST', body: formData }
     )
     const data = await res.json()
     setMediaUrl(data.secure_url)
+    setMediaType(type)
+    setMediaName(file.name)
     setUploading(false)
+  }
+
+  function clearMedia() {
+    setMediaUrl('')
+    setMediaType('')
+    setMediaName('')
   }
 
   async function handleSubmit(formData: FormData) {
     if (!content.trim() && !mediaUrl) return
     setLoading(true)
     formData.set('media_url', mediaUrl)
-    formData.set('media_type', mediaUrl ? 'image' : '')
+    formData.set('media_type', mediaType)
     await createPost(formData)
     setContent('')
-    setMediaUrl('')
+    clearMedia()
     setLoading(false)
   }
+
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 mb-6">
       <div className="flex gap-3">
@@ -65,38 +78,52 @@ export function CreatePost({ username, avatarUrl }: Props) {
             className="w-full bg-transparent text-white placeholder-zinc-500 text-sm resize-none focus:outline-none mb-3"
           />
 
-          {mediaUrl && (
+          {/* Preview image */}
+          {mediaUrl && mediaType === 'image' && (
             <div className="relative mb-3 inline-block">
               <img src={mediaUrl} alt="preview" className="max-h-48 rounded-xl object-cover" />
-              <button
-                type="button"
-                onClick={() => setMediaUrl('')}
-                className="absolute top-2 right-2 bg-black/60 rounded-full p-1"
-              >
+              <button type="button" onClick={clearMedia}
+                className="absolute top-2 right-2 bg-black/60 rounded-full p-1">
                 <X size={14} className="text-white" />
               </button>
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-3 border-t border-zinc-800">
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="text-zinc-400 hover:text-violet-400 transition-colors"
-            >
-              {uploading ? (
-                <span className="text-xs text-zinc-500">Upload...</span>
-              ) : (
-                <ImageIcon size={20} />
-              )}
-            </button>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          {/* Preview audio */}
+          {mediaUrl && mediaType === 'audio' && (
+            <div className="flex items-center gap-3 bg-zinc-800 rounded-xl px-4 py-3 mb-3">
+              <Music size={18} className="text-violet-400 flex-shrink-0" />
+              <span className="text-zinc-300 text-sm truncate flex-1">{mediaName}</span>
+              <button type="button" onClick={clearMedia}>
+                <X size={16} className="text-zinc-500 hover:text-white transition-colors" />
+              </button>
+            </div>
+          )}
 
-            <button
-              type="submit"
-              disabled={loading || (!content.trim() && !mediaUrl)}
-              className="bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2 rounded-xl transition-colors"
-            >
+          <div className="flex items-center justify-between pt-3 border-t border-zinc-800">
+            <div className="flex items-center gap-4">
+              {/* Upload image */}
+              <button type="button" onClick={() => imageRef.current?.click()}
+                className="text-zinc-400 hover:text-violet-400 transition-colors">
+                <ImageIcon size={20} />
+              </button>
+              <input ref={imageRef} type="file" accept="image/*" className="hidden"
+                onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], 'image')} />
+
+              {/* Upload audio */}
+              <button type="button" onClick={() => audioRef.current?.click()}
+                className="text-zinc-400 hover:text-violet-400 transition-colors">
+                <Music size={20} />
+              </button>
+              <input ref={audioRef} type="file" accept="audio/*" className="hidden"
+                onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], 'audio')} />
+
+              {uploading && <span className="text-zinc-500 text-xs">Upload...</span>}
+            </div>
+
+            <button type="submit"
+              disabled={loading || uploading || (!content.trim() && !mediaUrl)}
+              className="bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2 rounded-xl transition-colors">
               {loading ? 'Publication...' : 'Publier'}
             </button>
           </div>

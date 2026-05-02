@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { Heart, MessageCircle, UserPlus, UserCheck } from 'lucide-react'
 import { toggleLike, addComment, toggleFollow } from '@/app/posts/actions'
 import { Badge } from '@/components/ui/Badge'
+import { AudioPlayer } from '@/components/ui/AudioPlayer'
 
 type Post = {
   id: string
   content: string | null
   media_url: string | null
+  media_type: string | null
   likes_count: number
   comments_count: number
   created_at: string
@@ -104,8 +106,14 @@ export function PostCard({ post, currentUserId, isLiked, isFollowing }: Props) {
         <p className="text-zinc-200 text-sm leading-relaxed mb-3 whitespace-pre-wrap">{post.content}</p>
       )}
 
-      {post.media_url && (
+      {post.media_url && post.media_type === 'image' && (
         <img src={post.media_url} alt="media" className="w-full rounded-xl object-cover max-h-96 mb-3" />
+      )}
+
+      {post.media_url && post.media_type === 'audio' && (
+        <div className="mb-3">
+          <AudioPlayer url={post.media_url} />
+        </div>
       )}
 
       {/* Actions */}
