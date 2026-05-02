@@ -4,7 +4,7 @@ import { logout } from '@/app/auth/actions'
 import { CreatePost } from '@/components/feed/CreatePost'
 import { PostCard } from '@/components/feed/PostCard'
 import { NotificationBell } from '@/components/notifications/NotificationBell'
-import { Users , Search, MessageCircle } from 'lucide-react'
+import { ShoppingBag, Users, Search, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function FeedPage() {
@@ -47,6 +47,9 @@ export default async function FeedPage() {
           <div className="flex items-center gap-5">
             <Link href="/groups">
               <Users size={20} className="text-zinc-400 hover:text-white transition-colors" />
+            </Link>
+            <Link href="/marketplace">
+              <ShoppingBag size={20} className="text-zinc-400 hover:text-white transition-colors" />
             </Link>
             <Link href="/explore" className="text-zinc-400 hover:text-white transition-colors">
               <Search size={20} />

@@ -112,6 +112,18 @@ export default async function ProfilePage({
           </div>
         )}
 
+        {/* Services */}
+        {isOwner && (
+          <div className="mt-6 pt-6 border-t border-zinc-800">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-zinc-500 text-xs uppercase tracking-wider">Mes services</p>
+              <Link href="/services/manage" className="text-violet-400 hover:text-violet-300 text-xs transition-colors">
+                Gérer →
+              </Link>
+            </div>
+          </div>
+        )}
+
         {profile.website_url && (
           <a
             href={profile.website_url}
