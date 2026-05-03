@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/Badge'
+import { BuyButton } from '@/components/services/BuyButton'
 import { ROLE_LABELS } from '@/types'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -95,12 +96,16 @@ export default async function ServiceDetailPage({
               </div>
             </div>
 
-            {/* CTA */}
             {!isOwner && (
-              <Link href={`/messages/${service.provider_id}`}
-                className="w-full bg-violet-600 hover:bg-violet-500 text-white font-medium py-3 rounded-xl transition-colors text-center block">
-                💬 Contacter le vendeur
-              </Link>
+              <div className="space-y-3">
+                <BuyButton serviceId={service.id} />
+                <Link
+                  href={`/messages/${service.provider_id}`}
+                  className="w-full border border-zinc-700 hover:border-zinc-500 text-zinc-300 hover:text-white font-medium py-3 rounded-xl transition-colors text-center block"
+                >
+                  💬 Contacter le vendeur
+                </Link>
+              </div>
             )}
           </div>
 
