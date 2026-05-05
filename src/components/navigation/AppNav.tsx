@@ -1,3 +1,7 @@
+
+'use client'
+
+import { usePathname } from 'next/navigation'
 import { logout } from '@/app/auth/actions'
 import { NotificationBell } from '@/components/notifications/NotificationBell'
 import { GraduationCap, Home, LogOut, MessageCircle, Search, ShoppingBag, Users } from 'lucide-react'
@@ -19,6 +23,7 @@ const navItems = [
 ]
 
 export function AppNav({ currentUserId, username, maxWidth = '3xl' }: Props) {
+  const pathname = usePathname()
   const containerWidth = maxWidth === '2xl' ? 'max-w-2xl' : 'max-w-3xl'
 
   return (
@@ -30,17 +35,24 @@ export function AppNav({ currentUserId, username, maxWidth = '3xl' }: Props) {
 
         <div className="flex min-w-0 flex-1 items-center justify-end gap-1 sm:flex-none sm:gap-2">
           <div className="flex min-w-0 items-center gap-0.5 sm:gap-2">
-            {navItems.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                aria-label={label}
-                title={label}
-                className="grid h-9 w-8 shrink-0 place-items-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white sm:w-9"
-              >
-                <Icon size={20} />
-              </Link>
-            ))}
+            {navItems.map(({ href, label, icon: Icon }) => {
+              const isActive = pathname === href || pathname.startsWith(href + '/')
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-label={label}
+                  title={label}
+                  className={`grid h-9 w-8 shrink-0 place-items-center rounded-lg transition-colors sm:w-9 ${
+                    isActive
+                      ? 'bg-violet-600/20 text-violet-400'
+                      : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
+                  }`}
+                >
+                  <Icon size={20} />
+                </Link>
+              )
+            })}
           </div>
 
           <div className="h-6 w-px shrink-0 bg-zinc-800" />
