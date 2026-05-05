@@ -1,9 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ExploreClient } from '@/components/explore/ExploreClient'
-import Link from 'next/link'
-import { MessageCircle, Bell } from 'lucide-react'
-import { NotificationBell } from '@/components/notifications/NotificationBell'
+import { AppNav } from '@/components/navigation/AppNav'
 
 export default async function ExplorePage({
     searchParams,
@@ -45,24 +43,7 @@ export default async function ExplorePage({
 
     return (
         <div className="min-h-screen bg-black text-white">
-            {/* Navbar */}
-            <nav className="sticky top-0 z-10 bg-black/80 backdrop-blur border-b border-zinc-800">
-                <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-                    <Link href="/feed" className="text-lg font-bold">
-                        Tone <span className="text-violet-500">In</span>
-                    </Link>
-                    <div className="flex items-center gap-5">
-                        <Link href="/messages">
-                            <MessageCircle size={20} className="text-zinc-400 hover:text-white transition-colors" />
-                        </Link>
-                        <NotificationBell currentUserId={user.id} />
-                        <Link href={`/profile/${currentProfile?.username}`}
-                            className="text-zinc-300 hover:text-white text-sm transition-colors">
-                            @{currentProfile?.username}
-                        </Link>
-                    </div>
-                </div>
-            </nav>
+            <AppNav currentUserId={user.id} username={currentProfile?.username} />
 
             <main className="max-w-3xl mx-auto px-4 py-6">
                 <ExploreClient

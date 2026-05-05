@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { MessageCircle, Search, Users, ShoppingBag, GraduationCap } from 'lucide-react'
-import { NotificationBell } from '@/components/notifications/NotificationBell'
+import { GraduationCap } from 'lucide-react'
+import { AppNav } from '@/components/navigation/AppNav'
 import { Badge } from '@/components/ui/Badge'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -48,24 +48,7 @@ export default async function MasterclassesPage({
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <nav className="sticky top-0 z-10 bg-black/80 backdrop-blur border-b border-zinc-800">
-        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/feed" className="text-lg font-bold">
-            Tone <span className="text-violet-500">In</span>
-          </Link>
-          <div className="flex items-center gap-5">
-            <Link href="/explore"><Search size={20} className="text-zinc-400 hover:text-white transition-colors" /></Link>
-            <Link href="/groups"><Users size={20} className="text-zinc-400 hover:text-white transition-colors" /></Link>
-            <Link href="/marketplace"><ShoppingBag size={20} className="text-zinc-400 hover:text-white transition-colors" /></Link>
-            <Link href="/messages"><MessageCircle size={20} className="text-zinc-400 hover:text-white transition-colors" /></Link>
-            <NotificationBell currentUserId={user.id} />
-            <Link href={`/profile/${currentProfile?.username}`}
-              className="text-zinc-300 hover:text-white text-sm transition-colors">
-              @{currentProfile?.username}
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <AppNav currentUserId={user.id} username={currentProfile?.username} />
 
       <main className="max-w-3xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
