@@ -25,9 +25,29 @@ export async function POST(request: NextRequest) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as any
+  const session = event.data.object as any
 
-    // Met à jour la commande
+  if (session.metadata.type === 'masterclass') {
+    // Confirme l'enrollment
+    await supabaseAdmin
+      .from('masterclass_enrollments')
+      .update({ stripe_session_id: session.id })
+      .eq('masterclass_id', session.metadata.masterclass_id)
+      .eq('student_id', session.metadata.student_id)
+
+    await supabaseAdmin.rpc('increment_students_count', {
+      mc_id: session.metadata.masterclass_id,
+    })
+
+    // Notif à l'instructeur
+    await supabaseAdmin.from('notifications').insert({
+      user_id: session.metadata.instructor_id,
+      type: 'message',
+      from_user_id: session.metadata.student_id,
+    })
+  }
+
+  if (session.metadata.type === 'service') {
     await supabaseAdmin
       .from('orders')
       .update({
@@ -37,18 +57,11 @@ export async function POST(request: NextRequest) {
       })
       .eq('stripe_session_id', session.id)
 
-    // Incrémente orders_count sur le service
     await supabaseAdmin.rpc('increment_orders_count', {
       service_id: session.metadata.service_id,
     })
-
-    // Notif au vendeur
-    await supabaseAdmin.from('notifications').insert({
-      user_id: session.metadata.seller_id,
-      type: 'message',
-      from_user_id: session.metadata.buyer_id,
-    })
   }
+}
 
   return NextResponse.json({ received: true })
 }

@@ -8,6 +8,10 @@ type Props = {
   url: string
 }
 
+function isAbortError(error: unknown) {
+  return error instanceof Error && error.name === 'AbortError'
+}
+
 export function AudioPlayer({ url }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const wavesurferRef = useRef<WaveSurfer | null>(null)
@@ -18,6 +22,8 @@ export function AudioPlayer({ url }: Props) {
 
   useEffect(() => {
     if (!containerRef.current) return
+
+    let isActive = true
 
     const ws = WaveSurfer.create({
       container: containerRef.current,
@@ -31,31 +37,49 @@ export function AudioPlayer({ url }: Props) {
       normalize: true,
     })
 
-    ws.load(url)
-
-    ws.on('ready', () => {
+    const unsubscribeReady = ws.on('ready', () => {
+      if (!isActive) return
       setLoading(false)
       setDuration(ws.getDuration())
     })
 
-    ws.on('audioprocess', () => {
+    const unsubscribeAudioProcess = ws.on('audioprocess', () => {
+      if (!isActive) return
       setCurrentTime(ws.getCurrentTime())
     })
 
-    ws.on('finish', () => {
+    const unsubscribeFinish = ws.on('finish', () => {
+      if (!isActive) return
       setPlaying(false)
       setCurrentTime(0)
     })
 
+    ws.load(url).catch(error => {
+      if (!isAbortError(error)) {
+        console.error('Failed to load audio:', error)
+      }
+    })
+
     wavesurferRef.current = ws
 
-    return () => ws.destroy()
+    return () => {
+      isActive = false
+      wavesurferRef.current = null
+      unsubscribeReady()
+      unsubscribeAudioProcess()
+      unsubscribeFinish()
+      ws.destroy()
+    }
   }, [url])
 
   function togglePlay() {
     if (!wavesurferRef.current) return
-    wavesurferRef.current.playPause()
-    setPlaying(!playing)
+    wavesurferRef.current.playPause().catch(error => {
+      if (!isAbortError(error)) {
+        console.error('Failed to toggle audio playback:', error)
+      }
+    })
+    setPlaying(current => !current)
   }
 
   function formatTime(s: number) {

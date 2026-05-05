@@ -4,7 +4,7 @@ import { logout } from '@/app/auth/actions'
 import { CreatePost } from '@/components/feed/CreatePost'
 import { PostCard } from '@/components/feed/PostCard'
 import { NotificationBell } from '@/components/notifications/NotificationBell'
-import { ShoppingBag, Users, Search, MessageCircle } from 'lucide-react'
+import { Search, MessageCircle, Users, ShoppingBag, GraduationCap } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function FeedPage() {
@@ -50,6 +50,9 @@ export default async function FeedPage() {
             </Link>
             <Link href="/marketplace">
               <ShoppingBag size={20} className="text-zinc-400 hover:text-white transition-colors" />
+            </Link>
+            <Link href="/masterclasses">
+              <GraduationCap size={20} className="text-zinc-400 hover:text-white transition-colors" />
             </Link>
             <Link href="/explore" className="text-zinc-400 hover:text-white transition-colors">
               <Search size={20} />
