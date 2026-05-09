@@ -4,7 +4,7 @@
 import { usePathname } from 'next/navigation'
 import { logout } from '@/app/auth/actions'
 import { NotificationBell } from '@/components/notifications/NotificationBell'
-import { GraduationCap, Home, LogOut, MessageCircle, Search, ShoppingBag, Users } from 'lucide-react'
+import { GraduationCap, Home, LogOut, MessageCircle, Search, ShoppingBag, User, Users } from 'lucide-react'
 import Link from 'next/link'
 
 type Props = {
@@ -61,12 +61,22 @@ export function AppNav({ currentUserId, username, maxWidth = '3xl' }: Props) {
           </div>
 
           {username && (
-            <Link
-              href={`/profile/${username}`}
-              className="hidden shrink-0 text-sm text-zinc-300 transition-colors hover:text-white md:block"
-            >
-              @{username}
-            </Link>
+            <>
+              <Link
+                href={`/profile/${username}`}
+                className="hidden shrink-0 text-sm text-zinc-300 transition-colors hover:text-white md:block"
+              >
+                @{username}
+              </Link>
+              <Link
+                href={`/profile/${username}`}
+                aria-label="Mon profil"
+                title="Mon profil"
+                className="grid h-9 w-8 shrink-0 place-items-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white md:hidden"
+              >
+                <User size={18} />
+              </Link>
+            </>
           )}
 
           <form action={logout} className="shrink-0">

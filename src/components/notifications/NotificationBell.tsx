@@ -123,7 +123,7 @@ export function NotificationBell({ currentUserId }: Props) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-8 w-80 bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
+        <div className="absolute right-0 top-8 w-[min(20rem,calc(100vw-1.5rem))] bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-zinc-800">
             <p className="text-white font-medium text-sm">Notifications</p>
           </div>
