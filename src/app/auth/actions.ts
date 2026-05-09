@@ -38,6 +38,33 @@ export async function register(formData: FormData) {
   redirect('/onboarding')
 }
 
+export async function forgotPassword(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
+  })
+
+  if (error) return { error: error.message }
+  return { success: true }
+}
+
+export async function resetPassword(formData: FormData) {
+  const supabase = await createClient()
+  const password = formData.get('password') as string
+  const confirm = formData.get('confirm') as string
+
+  if (password !== confirm) return { error: 'Les mots de passe ne correspondent pas' }
+  if (password.length < 6) return { error: 'Minimum 6 caractères' }
+
+  const { error } = await supabase.auth.updateUser({ password })
+
+  if (error) return { error: error.message }
+
+  redirect('/login')
+}
+
 export async function logout() {
   const supabase = await createClient()
   await supabase.auth.signOut()
