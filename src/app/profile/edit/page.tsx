@@ -4,22 +4,23 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { updateProfile } from '@/app/auth/actions'
+import { ChangePasswordForm } from '@/components/profile/ChangePasswordForm'
 import type { Profile } from '@/types'
 
 const ROLES = [
-  { value: 'musician',   label: '🎸 Musicien' },
-  { value: 'producer',   label: '🎛️ Producteur' },
-  { value: 'beatmaker',  label: '🥁 Beatmaker' },
+  { value: 'musician', label: '🎸 Musicien' },
+  { value: 'producer', label: '🎛️ Producteur' },
+  { value: 'beatmaker', label: '🥁 Beatmaker' },
   { value: 'songwriter', label: '✍️ Songwriter' },
-  { value: 'teacher',    label: '🎓 Professeur' },
-  { value: 'learner',    label: '📚 Apprenant' },
+  { value: 'teacher', label: '🎓 Professeur' },
+  { value: 'learner', label: '📚 Apprenant' },
 ]
 
 const BADGES = [
-  { value: 'beginner',     label: 'Débutant' },
+  { value: 'beginner', label: 'Débutant' },
   { value: 'intermediate', label: 'Intermédiaire' },
-  { value: 'advanced',     label: 'Avancé' },
-  { value: 'expert',       label: 'Expert' },
+  { value: 'advanced', label: 'Avancé' },
+  { value: 'expert', label: 'Expert' },
 ]
 
 export default function EditProfilePage() {
@@ -182,6 +183,11 @@ export default function EditProfilePage() {
             {saving ? 'Sauvegarde...' : 'Sauvegarder'}
           </button>
         </form>
+
+        {/* Mot de passe — EN DEHORS du form principal */}
+        <div className="border-t border-zinc-800 mt-8 pt-8">
+          <ChangePasswordForm />
+        </div>
       </div>
     </div>
   )
