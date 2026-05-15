@@ -35,29 +35,35 @@ export default async function FeedPage() {
   const followingIds = new Set(userFollows?.map(f => f.following_id) ?? [])
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <AppNav currentUserId={user.id} username={profile?.username} maxWidth="2xl" />
+    <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#e8e4dc' }}>
+      <AppNav
+        currentUserId={user.id}
+        username={profile?.username}
+        avatarUrl={profile?.avatar_url ?? null}
+        maxWidth="2xl"
+      />
 
-      <main className="max-w-2xl mx-auto px-4 py-6">
+      <main className="max-w-2xl mx-auto px-4 py-6 pb-[76px] md:pb-8">
         <CreatePost
           username={profile?.username ?? ''}
           avatarUrl={profile?.avatar_url ?? null}
         />
+
         {posts && posts.length > 0 ? (
           posts.map(post => (
             <PostCard
               key={post.id}
-              post={post as any}
+              post={post as unknown as Parameters<typeof PostCard>[0]['post']}
               currentUserId={user.id}
               isLiked={likedPostIds.has(post.id)}
-              isFollowing={followingIds.has((post.profiles as any)?.id)}
+              isFollowing={followingIds.has((post.profiles as { id: string } | null)?.id)}
             />
           ))
         ) : (
           <div className="text-center py-20">
             <p className="text-4xl mb-4">♪</p>
-            <p className="text-zinc-400">Aucun post pour l&apos;instant.</p>
-            <p className="text-zinc-500 text-sm mt-1">Sois le premier à publier !</p>
+            <p className="text-sm" style={{ color: '#888' }}>Aucun post pour l&apos;instant.</p>
+            <p className="text-xs mt-1" style={{ color: '#444' }}>Sois le premier à publier !</p>
           </div>
         )}
       </main>

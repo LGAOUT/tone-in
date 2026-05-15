@@ -15,7 +15,7 @@ export default async function ChatPage({
 
   const { data: currentProfile } = await supabase
     .from('profiles')
-    .select('username')
+    .select('username, avatar_url')
     .eq('id', user.id)
     .single()
 
@@ -28,8 +28,8 @@ export default async function ChatPage({
   if (!partner) notFound()
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      <AppNav currentUserId={user.id} username={currentProfile?.username} maxWidth="2xl" />
+    <div className="min-h-screen flex flex-col" style={{ background: '#0a0a0a', color: '#e8e4dc' }}>
+      <AppNav currentUserId={user.id} username={currentProfile?.username} avatarUrl={currentProfile?.avatar_url ?? null} maxWidth="2xl" />
 
       <div className="border-b border-zinc-800">
         <div className="max-w-2xl mx-auto px-4 py-3">

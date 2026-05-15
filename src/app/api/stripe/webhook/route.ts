@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
+import type Stripe from 'stripe'
 
 // Client admin Supabase (bypass RLS)
 const supabaseAdmin = createClient(
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (event.type === 'checkout.session.completed') {
-  const session = event.data.object as any
+  const session = event.data.object as Stripe.Checkout.Session
 
   if (session.metadata.type === 'masterclass') {
     // Confirme l'enrollment

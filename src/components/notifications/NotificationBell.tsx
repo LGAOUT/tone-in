@@ -29,6 +29,15 @@ const NOTIF_LABELS: Record<string, string> = {
   comment: 'a commenté ton post',
 }
 
+function timeAgo(date: string) {
+  const diff = Date.now() - new Date(date).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins}m`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h`
+  return `${Math.floor(hours / 24)}j`
+}
+
 export function NotificationBell({ currentUserId }: Props) {
   const [notifs, setNotifs] = useState<Notification[]>([])
   const [open, setOpen] = useState(false)
@@ -73,6 +82,7 @@ export function NotificationBell({ currentUserId }: Props) {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNotifs()
 
     const supabase = createClient()
@@ -98,15 +108,6 @@ export function NotificationBell({ currentUserId }: Props) {
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
-
-  function timeAgo(date: string) {
-    const diff = Date.now() - new Date(date).getTime()
-    const mins = Math.floor(diff / 60000)
-    if (mins < 60) return `${mins}m`
-    const hours = Math.floor(mins / 60)
-    if (hours < 24) return `${hours}h`
-    return `${Math.floor(hours / 24)}j`
-  }
 
   return (
     <div className="relative" ref={ref}>

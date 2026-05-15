@@ -23,9 +23,9 @@ export const ROLE_LABELS: Record<string, string> = {
   learner: '📚 Apprenant',
 }
 
-export const BADGE_CONFIG: Record<string, { label: string; color: string }> = {
-  beginner:     { label: 'Débutant',      color: 'bg-zinc-500' },
-  intermediate: { label: 'Intermédiaire', color: 'bg-blue-500' },
-  advanced:     { label: 'Avancé',        color: 'bg-violet-500' },
-  expert:       { label: 'Expert',        color: 'bg-amber-500' },
+export const BADGE_CONFIG: Record<string, { label: string; bg: string; text: string; border: string }> = {
+  beginner:     { label: 'Débutant',      bg: 'rgba(124,109,250,0.09)', text: '#9d91fb', border: 'rgba(124,109,250,0.19)' },
+  intermediate: { label: 'Intermédiaire', bg: 'rgba(29,158,117,0.09)',  text: '#3dcca0', border: 'rgba(29,158,117,0.25)' },
+  advanced:     { label: 'Pro',           bg: 'rgba(212,83,126,0.09)',  text: '#e87aaa', border: 'rgba(212,83,126,0.25)' },
+  expert:       { label: 'Expert',        bg: 'rgba(212,83,126,0.09)',  text: '#e87aaa', border: 'rgba(212,83,126,0.25)' },
 }

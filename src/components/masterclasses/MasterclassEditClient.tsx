@@ -4,7 +4,26 @@ import { useState, useRef } from 'react'
 import { addChapter, deleteChapter, togglePublish } from '@/app/masterclasses/actions'
 import { Trash2, Eye, EyeOff, Plus } from 'lucide-react'
 
-export function MasterclassEditClient({ mc, initialChapters }: any) {
+type Chapter = {
+  id: string
+  title: string
+  duration_minutes: number
+  free_preview: boolean
+  video_url: string | null
+}
+
+type MC = {
+  id: string
+  title: string
+  published: boolean
+}
+
+type Props = {
+  mc: MC
+  initialChapters: Chapter[]
+}
+
+export function MasterclassEditClient({ mc, initialChapters }: Props) {
   const [chapters, setChapters] = useState(initialChapters)
   const [published, setPublished] = useState(mc.published)
   const [showForm, setShowForm] = useState(false)
@@ -42,7 +61,7 @@ export function MasterclassEditClient({ mc, initialChapters }: any) {
   async function handleDeleteChapter(chapterId: string) {
     if (!confirm('Supprimer ce chapitre ?')) return
     await deleteChapter(chapterId, mc.id)
-    setChapters((prev: any) => prev.filter((c: any) => c.id !== chapterId))
+    setChapters((prev) => prev.filter((c) => c.id !== chapterId))
   }
 
   async function handleTogglePublish() {
@@ -75,7 +94,7 @@ export function MasterclassEditClient({ mc, initialChapters }: any) {
             <p className="text-zinc-500 text-sm">Aucun chapitre. Ajoute le premier !</p>
           </div>
         )}
-        {chapters.map((chapter: any, i: number) => (
+        {chapters.map((chapter, i) => (
           <div key={chapter.id}
             className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
             <div className="w-7 h-7 rounded-full bg-violet-600/20 flex items-center justify-center flex-shrink-0">

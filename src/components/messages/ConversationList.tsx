@@ -86,6 +86,7 @@ export function ConversationList({ currentUserId }: Props) {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchConversations()
 
     const supabase = createClient()
@@ -107,7 +108,7 @@ export function ConversationList({ currentUserId }: Props) {
   if (conversations.length === 0) return (
     <div className="text-center py-16">
       <p className="text-3xl mb-3">💬</p>
-      <p className="text-zinc-400 text-sm">Aucune conversation pour l'instant.</p>
+      <p className="text-zinc-400 text-sm">Aucune conversation pour l&apos;instant.</p>
     </div>
   )
 

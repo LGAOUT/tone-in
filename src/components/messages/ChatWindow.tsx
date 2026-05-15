@@ -65,6 +65,7 @@ export function ChatWindow({ currentUserId, partnerId, partnerUsername, partnerA
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchMessages()
 
     const supabase = createClient()

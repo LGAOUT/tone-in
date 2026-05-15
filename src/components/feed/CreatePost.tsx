@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createPost } from '@/app/posts/actions'
-import { ImageIcon, Music, X } from 'lucide-react'
+import { ImageIcon, Music, Tag, X } from 'lucide-react'
 
 type Props = {
   username: string
@@ -58,72 +58,125 @@ export function CreatePost({ username, avatarUrl }: Props) {
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 mb-6">
+    <div
+      className="rounded-2xl p-4 mb-4"
+      style={{ background: '#141414', border: '0.5px solid rgba(255,255,255,0.06)' }}
+    >
       <div className="flex gap-3">
-        <div className="w-10 h-10 rounded-full bg-zinc-700 overflow-hidden flex-shrink-0">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt={username} className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-sm">🎵</div>
-          )}
+        {/* Avatar */}
+        <div
+          className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-bold"
+          style={{ background: 'rgba(124,109,250,0.12)', border: '1.5px solid rgba(124,109,250,0.2)', color: '#9d91fb' }}
+        >
+          {avatarUrl
+            ? <img src={avatarUrl} alt={username} className="w-full h-full object-cover" />
+            : username.charAt(0).toUpperCase()
+          }
         </div>
 
-        <form action={handleSubmit} className="flex-1">
+        <form action={handleSubmit} className="flex-1 min-w-0">
           <textarea
             name="content"
             value={content}
             onChange={e => setContent(e.target.value)}
             placeholder="Partage quelque chose avec la communauté..."
             rows={3}
-            className="w-full bg-transparent text-white placeholder-zinc-500 text-sm resize-none focus:outline-none mb-3"
+            className="w-full bg-transparent text-sm resize-none focus:outline-none"
+            style={{ color: '#e8e4dc' }}
           />
 
-          {/* Preview image */}
+          {/* Image preview */}
           {mediaUrl && mediaType === 'image' && (
             <div className="relative mb-3 inline-block">
               <img src={mediaUrl} alt="preview" className="max-h-48 rounded-xl object-cover" />
-              <button type="button" onClick={clearMedia}
-                className="absolute top-2 right-2 bg-black/60 rounded-full p-1">
-                <X size={14} className="text-white" />
+              <button
+                type="button"
+                onClick={clearMedia}
+                className="absolute top-2 right-2 rounded-full p-1"
+                style={{ background: 'rgba(0,0,0,0.6)' }}
+              >
+                <X size={13} className="text-white" />
               </button>
             </div>
           )}
 
-          {/* Preview audio */}
+          {/* Audio preview */}
           {mediaUrl && mediaType === 'audio' && (
-            <div className="flex items-center gap-3 bg-zinc-800 rounded-xl px-4 py-3 mb-3">
-              <Music size={18} className="text-violet-400 flex-shrink-0" />
-              <span className="text-zinc-300 text-sm truncate flex-1">{mediaName}</span>
+            <div
+              className="flex items-center gap-3 px-4 py-3 mb-3 rounded-[12px]"
+              style={{ background: '#0f0f0f', border: '0.5px solid rgba(255,255,255,0.08)' }}
+            >
+              <Music size={15} style={{ color: '#9d91fb', flexShrink: 0 }} />
+              <span className="text-sm truncate flex-1" style={{ color: '#e8e4dc' }}>{mediaName}</span>
               <button type="button" onClick={clearMedia}>
-                <X size={16} className="text-zinc-500 hover:text-white transition-colors" />
+                <X size={14} style={{ color: '#888' }} />
               </button>
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-3 border-t border-zinc-800">
-            <div className="flex items-center gap-4">
-              {/* Upload image */}
-              <button type="button" onClick={() => imageRef.current?.click()}
-                className="text-zinc-400 hover:text-violet-400 transition-colors">
-                <ImageIcon size={20} />
+          {/* Footer */}
+          <div
+            className="flex items-center justify-between pt-3"
+            style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)' }}
+          >
+            <div className="flex items-center gap-1.5">
+              {/* Photo */}
+              <button
+                type="button"
+                onClick={() => imageRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
+                style={{ color: '#888', border: '0.5px solid rgba(255,255,255,0.08)' }}
+              >
+                <ImageIcon size={13} />
+                Photo
               </button>
-              <input ref={imageRef} type="file" accept="image/*" className="hidden"
-                onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], 'image')} />
+              <input
+                ref={imageRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], 'image')}
+              />
 
-              {/* Upload audio */}
-              <button type="button" onClick={() => audioRef.current?.click()}
-                className="text-zinc-400 hover:text-violet-400 transition-colors">
-                <Music size={20} />
+              {/* Track */}
+              <button
+                type="button"
+                onClick={() => audioRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
+                style={{ color: '#888', border: '0.5px solid rgba(255,255,255,0.08)' }}
+              >
+                <Music size={13} />
+                Track
               </button>
-              <input ref={audioRef} type="file" accept="audio/*" className="hidden"
-                onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], 'audio')} />
+              <input
+                ref={audioRef}
+                type="file"
+                accept="audio/*"
+                className="hidden"
+                onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0], 'audio')}
+              />
 
-              {uploading && <span className="text-zinc-500 text-xs">Upload...</span>}
+              {/* Tag */}
+              <button
+                type="button"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
+                style={{ color: '#888', border: '0.5px solid rgba(255,255,255,0.08)' }}
+              >
+                <Tag size={13} />
+                Tag
+              </button>
+
+              {uploading && (
+                <span className="text-xs ml-1" style={{ color: '#888' }}>Envoi...</span>
+              )}
             </div>
 
-            <button type="submit"
+            <button
+              type="submit"
               disabled={loading || uploading || (!content.trim() && !mediaUrl)}
-              className="bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium px-5 py-2 rounded-xl transition-colors">
+              className="text-sm font-medium px-5 py-2 transition-colors disabled:opacity-40 text-white"
+              style={{ background: '#7c6dfa', borderRadius: 9 }}
+            >
               {loading ? 'Publication...' : 'Publier'}
             </button>
           </div>

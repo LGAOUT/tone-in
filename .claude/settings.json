@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-Location)",
+      "Bash(cd \"/c/Users/yassi/OneDrive/Desktop/projets-dev/Tone In p1/tone-in\" && find . -path ./node_modules -prune -o -type f \\\\\\( -name \"*nav*\" -o -name \"*feed*\" -o -name \"*post*\" -o -name \"*audio*\" -o -name \"*player*\" -o -name \"*card*\" \\\\\\) -print 2>/dev/null | grep -v node_modules | head -50)",
+      "Read(//c/c/Users/yassi/OneDrive/Desktop/projets-dev/Tone In p1/**)",
+      "Bash(git checkout *)",
+      "Bash(npm run *)",
+      "Bash(grep -E \"\\(error|^C:\\\\\\\\\\)\")",
+      "Bash(npx eslint *)",
+      "Bash(grep -E \"\\\\.tsx$|\\\\.ts$|error\")",
+      "Bash(grep -E \"\\\\.tsx$|error\")",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}

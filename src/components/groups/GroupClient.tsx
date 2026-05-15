@@ -7,10 +7,48 @@ import { Badge } from '@/components/ui/Badge'
 import Link from 'next/link'
 import { UserPlus, UserCheck, ImageIcon, Music, X } from 'lucide-react'
 
-export function GroupClient({ group, currentUserId, isMember: initMember, isAdmin, initialPosts, members }: any) {
+type Group = {
+  id: string
+  name: string
+  description: string | null
+  members_count: number
+  posts_count: number
+}
+
+type Member = {
+  profiles: { id: string; avatar_url: string | null } | null
+}
+
+type GroupPost = {
+  id: string
+  content: string | null
+  media_url: string | null
+  media_type: string | null
+  created_at: string
+  profiles: { username: string; full_name: string | null; avatar_url: string | null; badge_level: string } | null
+}
+
+type Props = {
+  group: Group
+  isMember: boolean
+  isAdmin: boolean
+  initialPosts: GroupPost[]
+  members: Member[]
+}
+
+function timeAgo(date: string) {
+  const diff = Date.now() - new Date(date).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins}m`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h`
+  return `${Math.floor(hours / 24)}j`
+}
+
+export function GroupClient({ group, isMember: initMember, isAdmin, initialPosts, members }: Props) {
   const [isMember, setIsMember] = useState(initMember)
   const [membersCount, setMembersCount] = useState(group.members_count)
-  const [posts, setPosts] = useState(initialPosts)
+  const [posts] = useState(initialPosts)
   const [content, setContent] = useState('')
   const [mediaUrl, setMediaUrl] = useState('')
   const [mediaType, setMediaType] = useState('')
@@ -56,15 +94,6 @@ export function GroupClient({ group, currentUserId, isMember: initMember, isAdmi
     setPosting(false)
   }
 
-  function timeAgo(date: string) {
-    const diff = Date.now() - new Date(date).getTime()
-    const mins = Math.floor(diff / 60000)
-    if (mins < 60) return `${mins}m`
-    const hours = Math.floor(mins / 60)
-    if (hours < 24) return `${hours}h`
-    return `${Math.floor(hours / 24)}j`
-  }
-
   return (
     <div>
       {/* Header groupe */}
@@ -93,7 +122,7 @@ export function GroupClient({ group, currentUserId, isMember: initMember, isAdmi
         {/* Aperçu membres */}
         {members.length > 0 && (
           <div className="flex items-center gap-1 mt-3">
-            {members.slice(0, 6).map((m: any) => (
+            {members.slice(0, 6).map((m) => (
               <div key={m.profiles?.id} className="w-7 h-7 rounded-full bg-zinc-700 overflow-hidden -ml-1 first:ml-0 border border-zinc-900">
                 {m.profiles?.avatar_url ? (
                   <img src={m.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -168,7 +197,7 @@ export function GroupClient({ group, currentUserId, isMember: initMember, isAdmi
           </p>
         </div>
       ) : (
-        posts.map((post: any) => (
+        posts.map((post) => (
           <div key={post.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 mb-4">
             <Link href={`/profile/${post.profiles?.username}`} className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-full bg-zinc-700 overflow-hidden">

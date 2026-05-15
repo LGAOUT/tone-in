@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
             <>
               <h2 className="text-white font-semibold text-lg mb-2">Mot de passe oublié</h2>
               <p className="text-zinc-400 text-sm mb-6">
-                Saisis ton email et on t'envoie un lien de réinitialisation.
+                Saisis ton email et on t&apos;envoie un lien de réinitialisation.
               </p>
 
               <form action={handleSubmit} className="space-y-4">

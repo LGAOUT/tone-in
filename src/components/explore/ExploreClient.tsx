@@ -166,7 +166,7 @@ export function ExploreClient({
           <div className="text-center py-20">
             <p className="text-4xl mb-4">🔍</p>
             <p className="text-zinc-400">Aucun profil trouvé.</p>
-            <p className="text-zinc-500 text-sm mt-1">Essaie d'autres mots-clés ou filtres.</p>
+            <p className="text-zinc-500 text-sm mt-1">Essaie d&apos;autres mots-clés ou filtres.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -42,10 +42,10 @@ export default async function ExplorePage({
     const { data: profiles } = await query
 
     return (
-        <div className="min-h-screen bg-black text-white">
-            <AppNav currentUserId={user.id} username={currentProfile?.username} />
+        <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#e8e4dc' }}>
+            <AppNav currentUserId={user.id} username={currentProfile?.username} avatarUrl={currentProfile?.avatar_url ?? null} />
 
-            <main className="max-w-3xl mx-auto px-4 py-6">
+            <main className="max-w-3xl mx-auto px-4 py-6 pb-[76px] md:pb-8">
                 <ExploreClient
                     initialProfiles={profiles ?? []}
                     currentUserId={user.id}

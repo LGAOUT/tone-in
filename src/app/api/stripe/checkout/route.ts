@@ -120,8 +120,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 })
 
-  } catch (error: any) {
-    console.error('STRIPE CHECKOUT ERROR:', error.message)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('STRIPE CHECKOUT ERROR:', message)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

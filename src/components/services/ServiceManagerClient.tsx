@@ -48,7 +48,7 @@ export function ServiceManagerClient({ services: initial }: { services: Service[
   if (services.length === 0) return (
     <div className="text-center py-20">
       <p className="text-4xl mb-4">🎵</p>
-      <p className="text-zinc-400 mb-2">Tu n'as pas encore de services.</p>
+      <p className="text-zinc-400 mb-2">Tu n&apos;as pas encore de services.</p>
       <Link href="/services/new"
         className="text-violet-400 hover:text-violet-300 text-sm transition-colors">
         Créer mon premier service →

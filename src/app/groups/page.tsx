@@ -40,10 +40,10 @@ export default async function GroupsPage() {
   const myGroupIds = new Set(myMemberships?.map(m => m.group_id) ?? [])
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <AppNav currentUserId={user.id} username={currentProfile?.username} />
+    <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#e8e4dc' }}>
+      <AppNav currentUserId={user.id} username={currentProfile?.username} avatarUrl={currentProfile?.avatar_url ?? null} />
 
-      <main className="max-w-3xl mx-auto px-4 py-6">
+      <main className="max-w-3xl mx-auto px-4 py-6 pb-[76px] md:pb-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Groupes</h1>
           <Link href="/groups/new"
@@ -79,7 +79,17 @@ export default async function GroupsPage() {
   )
 }
 
-function GroupCard({ group, isMember }: { group: any, isMember: boolean }) {
+type Group = {
+  id: string
+  name: string
+  description: string | null
+  cover_url: string | null
+  members_count: number
+  posts_count: number
+  category: string
+}
+
+function GroupCard({ group, isMember }: { group: Group, isMember: boolean }) {
   return (
     <Link href={`/groups/${group.id}`}
       className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-2xl p-4 transition-colors block">

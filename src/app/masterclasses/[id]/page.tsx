@@ -114,7 +114,7 @@ export default async function MasterclassDetailPage({
             <div>
               <h2 className="text-lg font-bold mb-4">Chapitres</h2>
               {!chapters || chapters.length === 0 ? (
-                <p className="text-zinc-500 text-sm">Aucun chapitre pour l'instant.</p>
+                <p className="text-zinc-500 text-sm">Aucun chapitre pour l&apos;instant.</p>
               ) : (
                 <div className="space-y-2">
                   {chapters.map((chapter, i) => (
@@ -149,7 +149,7 @@ export default async function MasterclassDetailPage({
 
               {isInstructor ? (
                 <div className="bg-zinc-800 rounded-xl px-4 py-3 text-center">
-                  <p className="text-zinc-400 text-sm">Tu es l'instructeur</p>
+                  <p className="text-zinc-400 text-sm">Tu es l&apos;instructeur</p>
                 </div>
               ) : isEnrolled ? (
                 <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 text-center">

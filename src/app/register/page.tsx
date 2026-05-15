@@ -76,7 +76,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="text-zinc-400 text-sm mb-1.5 block">Nom d'utilisateur</label>
+              <label className="text-zinc-400 text-sm mb-1.5 block">Nom d&apos;utilisateur</label>
               <input
                 name="username"
                 type="text"

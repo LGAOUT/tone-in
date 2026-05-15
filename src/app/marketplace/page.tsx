@@ -3,6 +3,16 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { AppNav } from '@/components/navigation/AppNav'
 
+type Service = {
+  id: string
+  title: string
+  description: string
+  price: number
+  delivery_days: number
+  category: string
+  profiles: { avatar_url: string | null; username: string } | null
+}
+
 const CATEGORY_LABELS: Record<string, string> = {
   mixing: '🎚️ Mixage',
   mastering: '💿 Mastering',
@@ -45,10 +55,10 @@ export default async function MarketplacePage({
   const { data: services } = await query.limit(30)
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <AppNav currentUserId={user.id} username={currentProfile?.username} />
+    <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#e8e4dc' }}>
+      <AppNav currentUserId={user.id} username={currentProfile?.username} avatarUrl={currentProfile?.avatar_url ?? null} />
 
-      <main className="max-w-3xl mx-auto px-4 py-6">
+      <main className="max-w-3xl mx-auto px-4 py-6 pb-[76px] md:pb-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Marketplace</h1>
           <Link href="/services/manage"
@@ -87,7 +97,7 @@ export default async function MarketplacePage({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {services.map((service: any) => (
+            {(services as Service[]).map((service) => (
               <Link key={service.id} href={`/marketplace/${service.id}`}
                 className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-2xl p-4 transition-colors block">
 

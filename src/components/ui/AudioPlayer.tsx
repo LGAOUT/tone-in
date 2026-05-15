@@ -6,13 +6,14 @@ import { Play, Pause, Loader2 } from 'lucide-react'
 
 type Props = {
   url: string
+  trackName?: string
 }
 
 function isAbortError(error: unknown) {
   return error instanceof Error && error.name === 'AbortError'
 }
 
-export function AudioPlayer({ url }: Props) {
+export function AudioPlayer({ url, trackName }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const wavesurferRef = useRef<WaveSurfer | null>(null)
   const [playing, setPlaying] = useState(false)
@@ -22,42 +23,44 @@ export function AudioPlayer({ url }: Props) {
 
   useEffect(() => {
     if (!containerRef.current) return
-
     let isActive = true
 
     const ws = WaveSurfer.create({
       container: containerRef.current,
-      waveColor: '#52525b',
-      progressColor: '#7c3aed',
+      waveColor: '#2a2a2a',
+      progressColor: 'rgba(124,109,250,0.5)',
       cursorColor: 'transparent',
       barWidth: 2,
       barGap: 2,
       barRadius: 99,
-      height: 48,
+      height: 36,
       normalize: true,
     })
 
-    const unsubscribeReady = ws.on('ready', () => {
+    const unsubReady = ws.on('ready', () => {
       if (!isActive) return
       setLoading(false)
       setDuration(ws.getDuration())
     })
 
-    const unsubscribeAudioProcess = ws.on('audioprocess', () => {
+    const unsubProcess = ws.on('audioprocess', () => {
       if (!isActive) return
       setCurrentTime(ws.getCurrentTime())
     })
 
-    const unsubscribeFinish = ws.on('finish', () => {
+    const unsubSeek = ws.on('seeking', () => {
+      if (!isActive) return
+      setCurrentTime(ws.getCurrentTime())
+    })
+
+    const unsubFinish = ws.on('finish', () => {
       if (!isActive) return
       setPlaying(false)
       setCurrentTime(0)
     })
 
     ws.load(url).catch(error => {
-      if (!isAbortError(error)) {
-        console.error('Failed to load audio:', error)
-      }
+      if (!isAbortError(error)) console.error('Failed to load audio:', error)
     })
 
     wavesurferRef.current = ws
@@ -65,9 +68,10 @@ export function AudioPlayer({ url }: Props) {
     return () => {
       isActive = false
       wavesurferRef.current = null
-      unsubscribeReady()
-      unsubscribeAudioProcess()
-      unsubscribeFinish()
+      unsubReady()
+      unsubProcess()
+      unsubSeek()
+      unsubFinish()
       ws.destroy()
     }
   }, [url])
@@ -75,11 +79,9 @@ export function AudioPlayer({ url }: Props) {
   function togglePlay() {
     if (!wavesurferRef.current) return
     wavesurferRef.current.playPause().catch(error => {
-      if (!isAbortError(error)) {
-        console.error('Failed to toggle audio playback:', error)
-      }
+      if (!isAbortError(error)) console.error('Failed to toggle audio:', error)
     })
-    setPlaying(current => !current)
+    setPlaying(c => !c)
   }
 
   function formatTime(s: number) {
@@ -89,26 +91,49 @@ export function AudioPlayer({ url }: Props) {
   }
 
   return (
-    <div className="bg-zinc-800 rounded-2xl p-4 flex items-center gap-4">
+    <div
+      className="rounded-[12px] p-3 flex items-center gap-3"
+      style={{ background: '#0f0f0f', border: '0.5px solid rgba(255,255,255,0.06)' }}
+    >
+      {/* Play / Pause button — 36px purple circle */}
       <button
         onClick={togglePlay}
         disabled={loading}
-        className="w-10 h-10 rounded-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 flex items-center justify-center flex-shrink-0 transition-colors"
+        className="flex-shrink-0 flex items-center justify-center transition-colors disabled:opacity-50"
+        style={{ width: 36, height: 36, borderRadius: '50%', background: '#7c6dfa' }}
       >
-        {loading ? (
-          <Loader2 size={18} className="text-white animate-spin" />
-        ) : playing ? (
-          <Pause size={18} className="text-white" />
-        ) : (
-          <Play size={18} className="text-white ml-0.5" />
-        )}
+        {loading
+          ? <Loader2 size={15} className="text-white animate-spin" />
+          : playing
+            ? <Pause size={15} className="text-white" />
+            : <Play size={15} className="text-white ml-0.5" />
+        }
       </button>
 
+      {/* Right side: track name + waveform + times */}
       <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[12px] truncate font-medium" style={{ color: '#e8e4dc' }}>
+            {trackName ?? 'Audio Track'}
+          </span>
+          <span
+            className="text-[11px] flex-shrink-0 ml-2"
+            style={{ color: '#888', fontFamily: 'var(--font-dm-mono)' }}
+          >
+            {loading ? '--:--' : formatTime(duration)}
+          </span>
+        </div>
+
+        {/* Waveform — WaveSurfer renders here; click-to-seek is built-in */}
         <div ref={containerRef} className="w-full" />
-        <div className="flex justify-between mt-1">
-          <span className="text-zinc-500 text-xs">{formatTime(currentTime)}</span>
-          <span className="text-zinc-500 text-xs">{formatTime(duration)}</span>
+
+        <div className="mt-1">
+          <span
+            className="text-[10px]"
+            style={{ color: '#444', fontFamily: 'var(--font-dm-mono)' }}
+          >
+            {formatTime(currentTime)}
+          </span>
         </div>
       </div>
     </div>

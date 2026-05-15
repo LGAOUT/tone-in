@@ -5,6 +5,17 @@ import { GraduationCap } from 'lucide-react'
 import { AppNav } from '@/components/navigation/AppNav'
 import { Badge } from '@/components/ui/Badge'
 
+type Masterclass = {
+  id: string
+  title: string
+  price: number
+  students_count: number
+  category: string
+  level: string
+  thumbnail_url: string | null
+  profiles: { avatar_url: string | null; username: string } | null
+}
+
 const CATEGORY_LABELS: Record<string, string> = {
   mixing: '🎚️ Mixage', mastering: '💿 Mastering',
   production: '🎛️ Production', beatmaking: '🥁 Beatmaking',
@@ -47,10 +58,10 @@ export default async function MasterclassesPage({
   const enrolledIds = new Set(myEnrollments?.map(e => e.masterclass_id) ?? [])
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <AppNav currentUserId={user.id} username={currentProfile?.username} />
+    <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#e8e4dc' }}>
+      <AppNav currentUserId={user.id} username={currentProfile?.username} avatarUrl={currentProfile?.avatar_url ?? null} />
 
-      <main className="max-w-3xl mx-auto px-4 py-6">
+      <main className="max-w-3xl mx-auto px-4 py-6 pb-[76px] md:pb-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Masterclasses</h1>
           <Link href="/masterclasses/new"
@@ -84,7 +95,7 @@ export default async function MasterclassesPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {masterclasses.map((mc: any) => (
+            {(masterclasses as Masterclass[]).map((mc) => (
               <Link key={mc.id} href={`/masterclasses/${mc.id}`}
                 className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-2xl overflow-hidden transition-colors block">
                 {/* Thumbnail */}

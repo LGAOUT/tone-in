@@ -6,6 +6,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## Branching Strategy
+
+| Branch | Purpose | Deploy target |
+|---|---|---|
+| `main` | Production-ready code only | Vercel production |
+| `develop` | Integration branch — what goes to staging | Vercel staging (preview) |
+| `feature/*` | New features, branch off `develop` | — |
+| `fix/*` | Bug fixes, branch off `develop` | — |
+| `hotfix/*` | Critical prod fixes, branch off `main`, merge back to both `main` and `develop` | — |
+
+**Rules:**
+- Never commit directly to `main` or `develop` — always go through a PR.
+- PRs to `develop` or `main` must pass CI (lint + type check) before merge.
+- Protect `main` and `develop` in GitHub → Settings → Branches: require PR + 1 review + passing CI status check.
+- Vercel is connected to the repo: push to `main` = production deploy; `develop` is configured as a staging environment in Vercel project settings.
+
+---
+
 ## Commands
 
 ```bash
@@ -40,7 +58,7 @@ Path alias: `@/*` → `./src/*`
 ### Next.js App Router conventions
 - All pages under `src/app/` — route segments map directly to URLs.
 - Server Components are the default. Client Components (`'use client'`) are used only where browser APIs or interactivity are required.
-- Mutations go through **Server Actions** (`'use server'`), not traditional API routes. The only API routes are `src/app/api/stripe/` (checkout session creation and webhook handler).
+- Mutations go through **Server Actions** (`'use server'`), not traditional API routes. API routes: `src/app/api/stripe/` (checkout session creation and webhook handler) and `src/app/auth/callback/` (Google OAuth code exchange).
 
 ### Supabase client split
 Two separate clients must be used depending on context:
@@ -52,7 +70,11 @@ Never use the server client in a Client Component or vice versa.
 ### Auth flow
 - Sessions are managed via Supabase SSR cookies — no JWT in localStorage.
 - `src/hooks/useUser.ts` provides auth state on the client.
-- Route protection is handled in `src/proxy.ts` (middleware-like logic): `/feed` and related routes redirect to `/login` if unauthenticated; `/login` and `/register` redirect to `/feed` if already authenticated.
+- All auth Server Actions live in `src/app/auth/actions.ts`: `login`, `loginWithGoogle`, `register`, `logout`, `forgotPassword`, `resetPassword`, `changePassword`, `updateProfile`.
+- **Google OAuth**: `loginWithGoogle()` triggers Supabase OAuth redirect; the code-exchange callback is the API route `src/app/auth/callback/route.ts` which redirects to `/feed` on success.
+- **Password reset flow**: `/forgot-password` sends a reset email (redirects to `/reset-password`); `/reset-password` handles the Supabase magic-link token and calls `resetPassword()`.
+- **Change password**: authenticated users can change their password from `src/app/profile/edit` via `ChangePasswordForm` — verifies the current password before updating.
+- Route protection is handled in `src/proxy.ts`: paths starting with `/feed` redirect to `/login` if unauthenticated; `/login` and `/register` redirect to `/feed` if already authenticated.
 
 ### Stripe integration
 - **Checkout Sessions** for both services and masterclasses — never PaymentIntents directly.

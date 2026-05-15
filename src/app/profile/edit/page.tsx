@@ -127,7 +127,7 @@ export default function EditProfilePage() {
           </div>
 
           <div>
-            <label className="text-zinc-400 text-sm mb-1.5 block">Nom d'utilisateur</label>
+            <label className="text-zinc-400 text-sm mb-1.5 block">Nom d&apos;utilisateur</label>
             <input name="username" type="text" required defaultValue={profile?.username ?? ''}
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500 transition-colors" />
           </div>
