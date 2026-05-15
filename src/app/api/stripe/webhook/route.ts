@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
 
   if (event.type === 'checkout.session.completed') {
   const session = event.data.object as Stripe.Checkout.Session
+  if (!session.metadata) return NextResponse.json({ received: true })
 
   if (session.metadata.type === 'masterclass') {
     // Confirme l'enrollment

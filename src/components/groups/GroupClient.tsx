@@ -16,7 +16,7 @@ type Group = {
 }
 
 type Member = {
-  profiles: { id: string; avatar_url: string | null } | null
+  profiles: { id: string; avatar_url: string | null }[] | null
 }
 
 type GroupPost = {
@@ -122,10 +122,10 @@ export function GroupClient({ group, isMember: initMember, isAdmin, initialPosts
         {/* Aperçu membres */}
         {members.length > 0 && (
           <div className="flex items-center gap-1 mt-3">
-            {members.slice(0, 6).map((m) => (
-              <div key={m.profiles?.id} className="w-7 h-7 rounded-full bg-zinc-700 overflow-hidden -ml-1 first:ml-0 border border-zinc-900">
-                {m.profiles?.avatar_url ? (
-                  <img src={m.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
+            {members.slice(0, 6).map((m, i) => (
+              <div key={m.profiles?.[0]?.id ?? i} className="w-7 h-7 rounded-full bg-zinc-700 overflow-hidden -ml-1 first:ml-0 border border-zinc-900">
+                {m.profiles?.[0]?.avatar_url ? (
+                  <img src={m.profiles[0].avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs">🎵</div>
                 )}
@@ -212,7 +212,7 @@ export function GroupClient({ group, isMember: initMember, isAdmin, initialPosts
                   <span className="text-white text-sm font-medium">
                     {post.profiles?.full_name || post.profiles?.username}
                   </span>
-                  <Badge level={post.profiles?.badge_level} size="sm" />
+                  <Badge level={post.profiles?.badge_level ?? 'beginner'} size="sm" />
                 </div>
                 <span className="text-zinc-500 text-xs">{timeAgo(post.created_at)}</span>
               </div>

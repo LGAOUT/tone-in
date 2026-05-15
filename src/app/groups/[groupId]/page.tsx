@@ -54,7 +54,6 @@ export default async function GroupPage({
       <div className="max-w-2xl mx-auto px-4 py-6">
         <GroupClient
           group={group}
-          currentUserId={user.id}
           isMember={!!membership}
           isAdmin={membership?.role === 'admin'}
           initialPosts={posts ?? []}
