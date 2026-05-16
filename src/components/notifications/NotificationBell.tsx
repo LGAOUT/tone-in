@@ -113,25 +113,32 @@ export function NotificationBell({ currentUserId }: Props) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => { setOpen(!open); if (!open) markAllRead() }}
-        className="relative"
+        className="relative flex items-center justify-center w-8 h-8 rounded-[9px] transition-all"
+        style={{ color: '#888' }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#ffffff0a'; e.currentTarget.style.color = '#e8e4dc' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#888' }}
       >
-        <Bell size={20} className="text-zinc-400 hover:text-white transition-colors" />
+        <Bell size={17} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 bg-violet-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
+          <span
+            className="absolute top-1 right-1 rounded-full"
+            style={{ width: 6, height: 6, background: '#7c6dfa' }}
+          />
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-8 w-[min(20rem,calc(100vw-1.5rem))] bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl z-50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-zinc-800">
-            <p className="text-white font-medium text-sm">Notifications</p>
+        <div
+          className="absolute right-0 top-10 w-[min(20rem,calc(100vw-1.5rem))] rounded-2xl shadow-2xl z-50 overflow-hidden"
+          style={{ background: '#141414', border: '0.5px solid #ffffff10' }}
+        >
+          <div className="px-4 py-3" style={{ borderBottom: '0.5px solid #ffffff0a' }}>
+            <p className="text-sm font-medium" style={{ color: '#e8e4dc' }}>Notifications</p>
           </div>
 
           {notifs.length === 0 ? (
             <div className="px-4 py-8 text-center">
-              <p className="text-zinc-500 text-sm">Aucune notification</p>
+              <p className="text-sm" style={{ color: '#555' }}>Aucune notification</p>
             </div>
           ) : (
             <div className="max-h-96 overflow-y-auto">
@@ -139,26 +146,33 @@ export function NotificationBell({ currentUserId }: Props) {
                 <div
                   key={notif.id}
                   onClick={() => handleNotifClick(notif)}
-                  className={`flex items-center gap-3 px-4 py-3 hover:bg-zinc-800 transition-colors border-b border-zinc-800 last:border-0 cursor-pointer ${
-                    !notif.read ? 'bg-zinc-800/50' : ''
-                  }`}
+                  className="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors"
+                  style={{
+                    borderBottom: '0.5px solid #ffffff08',
+                    background: !notif.read ? 'rgba(124,109,250,0.04)' : 'transparent',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#ffffff06')}
+                  onMouseLeave={e => (e.currentTarget.style.background = !notif.read ? 'rgba(124,109,250,0.04)' : 'transparent')}
                 >
-                  <div className="w-9 h-9 rounded-full bg-zinc-700 overflow-hidden flex-shrink-0">
+                  <div
+                    className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-bold"
+                    style={{ background: '#2a1f5a', border: '0.5px solid #7c6dfa40', color: '#9d91fb' }}
+                  >
                     {notif.profiles?.avatar_url ? (
                       <img src={notif.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-sm">🎵</div>
+                      (notif.profiles?.username ?? '?').charAt(0).toUpperCase()
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-zinc-200">
-                      <span className="text-white font-medium">@{notif.profiles?.username}</span>
+                    <p className="text-sm" style={{ color: '#c8c4bc' }}>
+                      <span className="font-medium" style={{ color: '#e8e4dc' }}>@{notif.profiles?.username}</span>
                       {' '}{NOTIF_LABELS[notif.type]}
                     </p>
-                    <p className="text-xs text-zinc-500 mt-0.5">{timeAgo(notif.created_at)}</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: '#555', fontFamily: 'var(--font-dm-mono)' }}>{timeAgo(notif.created_at)}</p>
                   </div>
                   {!notif.read && (
-                    <div className="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0" />
+                    <div className="rounded-full flex-shrink-0" style={{ width: 6, height: 6, background: '#7c6dfa' }} />
                   )}
                 </div>
               ))}

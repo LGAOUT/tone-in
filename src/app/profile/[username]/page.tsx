@@ -2,7 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Badge } from '@/components/ui/Badge'
 import { ROLE_LABELS } from '@/types'
+import { AppNav } from '@/components/navigation/AppNav'
 import Link from 'next/link'
+import { ExternalLink, Edit2 } from 'lucide-react'
 
 export default async function ProfilePage({
   params,
@@ -23,13 +25,35 @@ export default async function ProfilePage({
   const { data: { user } } = await supabase.auth.getUser()
   const isOwner = user?.id === profile.id
 
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+  const { data: currentProfile } = user
+    ? await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single()
+    : { data: null }
 
-        {/* Header profil */}
-        <div className="flex items-start gap-5 mb-8">
-          <div className="w-20 h-20 rounded-full bg-zinc-800 overflow-hidden flex-shrink-0">
+  const MUSIC_ROLES = ['musician', 'producer', 'beatmaker', 'songwriter']
+  const isMusicRole = MUSIC_ROLES.includes(profile.role ?? '')
+
+  return (
+    <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#e8e4dc' }}>
+      {user && (
+        <AppNav
+          currentUserId={user.id}
+          username={currentProfile?.username}
+          avatarUrl={currentProfile?.avatar_url ?? null}
+        />
+      )}
+
+      <main className="max-w-2xl mx-auto px-4 py-8 pb-[76px] md:pb-12">
+
+        {/* ── Profile header ── */}
+        <div className="flex items-start gap-5 mb-6">
+          {/* Avatar */}
+          <div
+            className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-2xl font-bold"
+            style={isMusicRole
+              ? { background: '#2a1f5a', border: '1.5px solid #7c6dfa40', color: '#9d91fb' }
+              : { background: '#1e1e1e', border: '1.5px solid #ffffff10', color: '#888' }
+            }
+          >
             {profile.avatar_url ? (
               <img
                 src={profile.avatar_url}
@@ -37,73 +61,111 @@ export default async function ProfilePage({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-2xl">
-                🎵
-              </div>
+              (profile.full_name || profile.username).charAt(0).toUpperCase()
             )}
           </div>
 
+          {/* Info */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap mb-1">
-              <h1 className="text-xl font-bold">{profile.full_name || profile.username}</h1>
+            <div className="flex items-center gap-2.5 flex-wrap mb-1">
+              <h1 className="text-[20px] font-medium" style={{ color: '#e8e4dc' }}>
+                {profile.full_name || profile.username}
+              </h1>
               <Badge level={profile.badge_level} size="sm" />
             </div>
-            <p className="text-zinc-400 text-sm mb-2">@{profile.username}</p>
+            <p
+              className="text-[13px] mb-1"
+              style={{ color: '#888', fontFamily: 'var(--font-dm-mono)' }}
+            >
+              @{profile.username}
+            </p>
             {profile.role && (
-              <p className="text-zinc-300 text-sm">{ROLE_LABELS[profile.role]}</p>
+              <p className="text-[12px]" style={{ color: '#555' }}>
+                {ROLE_LABELS[profile.role]}
+              </p>
             )}
           </div>
 
-          {isOwner && (
-            <Link
-              href="/profile/edit"
-              className="bg-zinc-800 hover:bg-zinc-700 text-white text-sm px-4 py-2 rounded-xl transition-colors flex-shrink-0"
-            >
-              Modifier
-            </Link>
-          )}
-
-          {!isOwner && user && (
-            <Link
-              href={`/messages/${profile.id}`}
-              className="bg-violet-600 hover:bg-violet-500 text-white text-sm px-4 py-2 rounded-xl transition-colors flex-shrink-0"
-            >
-              Message
-            </Link>
-          )}
-
+          {/* Actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isOwner && (
+              <Link
+                href="/profile/edit"
+                className="hover-border flex items-center gap-1.5 text-[13px] px-3 rounded-[9px]"
+                style={{
+                  height: 34,
+                  background: '#1a1a1a',
+                  border: '0.5px solid #ffffff10',
+                  color: '#888',
+                }}
+              >
+                <Edit2 size={13} />
+                Modifier
+              </Link>
+            )}
+            {!isOwner && user && (
+              <Link
+                href={`/messages/${profile.id}`}
+                className="flex items-center text-[13px] font-medium px-4 rounded-[9px] text-white transition-opacity hover:opacity-85"
+                style={{ height: 34, background: '#7c6dfa' }}
+              >
+                Message
+              </Link>
+            )}
+          </div>
         </div>
 
-        {/* Bio */}
+        {/* ── Bio ── */}
         {profile.bio && (
-          <p className="text-zinc-300 mb-6 leading-relaxed">{profile.bio}</p>
+          <p
+            className="text-sm leading-relaxed mb-5"
+            style={{ color: '#c8c4bc' }}
+          >
+            {profile.bio}
+          </p>
         )}
 
-        {/* Stats */}
-        <div className="flex gap-6 mb-6">
-          <div className="text-center">
-            <p className="text-white font-bold text-lg">{profile.posts_count}</p>
-            <p className="text-zinc-500 text-xs">Posts</p>
-          </div>
-          <div className="text-center">
-            <p className="text-white font-bold text-lg">{profile.followers_count}</p>
-            <p className="text-zinc-500 text-xs">Abonnés</p>
-          </div>
-          <div className="text-center">
-            <p className="text-white font-bold text-lg">{profile.following_count}</p>
-            <p className="text-zinc-500 text-xs">Abonnements</p>
-          </div>
+        {/* ── Stats ── */}
+        <div
+          className="flex gap-6 mb-6 pb-6"
+          style={{ borderBottom: '0.5px solid #ffffff0a' }}
+        >
+          {[
+            { value: profile.posts_count, label: 'Posts' },
+            { value: profile.followers_count, label: 'Abonnés' },
+            { value: profile.following_count, label: 'Abonnements' },
+          ].map(({ value, label }) => (
+            <div key={label}>
+              <p className="text-[18px] font-medium" style={{ color: '#e8e4dc' }}>{value}</p>
+              <p
+                className="text-[11px] mt-0.5"
+                style={{ color: '#555', fontFamily: 'var(--font-dm-mono)' }}
+              >
+                {label}
+              </p>
+            </div>
+          ))}
         </div>
 
-        {/* Skills */}
+        {/* ── Skills ── */}
         {profile.skills?.length > 0 && (
           <div className="mb-6">
-            <p className="text-zinc-500 text-xs uppercase tracking-wider mb-3">Compétences</p>
-            <div className="flex flex-wrap gap-2">
+            <p
+              className="text-[11px] uppercase tracking-widest mb-3"
+              style={{ color: '#333', fontFamily: 'var(--font-dm-mono)' }}
+            >
+              Compétences
+            </p>
+            <div className="flex flex-wrap gap-1.5">
               {profile.skills.map((skill: string) => (
                 <span
                   key={skill}
-                  className="bg-zinc-800 text-zinc-300 text-sm px-3 py-1 rounded-full border border-zinc-700"
+                  className="text-[12px] px-3 py-1 rounded-full"
+                  style={{
+                    background: '#1e1e1e',
+                    color: '#888',
+                    border: '0.5px solid #ffffff10',
+                  }}
                 >
                   {skill}
                 </span>
@@ -112,30 +174,44 @@ export default async function ProfilePage({
           </div>
         )}
 
-        {/* Services */}
-        {isOwner && (
-          <div className="mt-6 pt-6 border-t border-zinc-800">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-zinc-500 text-xs uppercase tracking-wider">Mes services</p>
-              <Link href="/services/manage" className="text-violet-400 hover:text-violet-300 text-xs transition-colors">
-                Gérer →
-              </Link>
-            </div>
-          </div>
-        )}
-
+        {/* ── Website ── */}
         {profile.website_url && (
           <a
             href={profile.website_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-violet-400 hover:text-violet-300 text-sm"
+            className="hover-violet inline-flex items-center gap-1.5 text-[13px] mb-6"
+            style={{ color: '#9d91fb' }}
           >
-            🔗 {profile.website_url}
+            <ExternalLink size={13} />
+            {profile.website_url.replace(/^https?:\/\//, '')}
           </a>
         )}
 
-      </div>
+        {/* ── Owner — link to services ── */}
+        {isOwner && (
+          <div
+            className="mt-2 pt-5"
+            style={{ borderTop: '0.5px solid #ffffff0a' }}
+          >
+            <div className="flex items-center justify-between">
+              <p
+                className="text-[11px] uppercase tracking-widest"
+                style={{ color: '#333', fontFamily: 'var(--font-dm-mono)' }}
+              >
+                Mes services
+              </p>
+              <Link
+                href="/services/manage"
+                className="hover-violet text-[12px]"
+                style={{ color: '#9d91fb' }}
+              >
+                Gérer →
+              </Link>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   )
 }

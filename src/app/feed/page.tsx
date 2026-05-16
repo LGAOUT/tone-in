@@ -49,6 +49,20 @@ export default async function FeedPage() {
           avatarUrl={profile?.avatar_url ?? null}
         />
 
+        {/* ── Latest divider ── */}
+        {posts && posts.length > 0 && (
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
+            <span
+              className="text-[11px] tracking-widest uppercase"
+              style={{ color: '#333', fontFamily: 'var(--font-dm-mono)' }}
+            >
+              Latest
+            </span>
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
+          </div>
+        )}
+
         {posts && posts.length > 0 ? (
           posts.map(post => (
             <PostCard

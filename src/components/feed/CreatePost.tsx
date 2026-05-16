@@ -60,13 +60,13 @@ export function CreatePost({ username, avatarUrl }: Props) {
   return (
     <div
       className="rounded-2xl p-4 mb-4"
-      style={{ background: '#141414', border: '0.5px solid rgba(255,255,255,0.06)' }}
+      style={{ background: '#141414', border: '0.5px solid #ffffff10' }}
     >
       <div className="flex gap-3">
-        {/* Avatar */}
+        {/* Avatar — 36px */}
         <div
-          className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-bold"
-          style={{ background: 'rgba(124,109,250,0.12)', border: '1.5px solid rgba(124,109,250,0.2)', color: '#9d91fb' }}
+          className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-bold"
+          style={{ background: '#2a1f5a', border: '0.5px solid #7c6dfa40', color: '#9d91fb' }}
         >
           {avatarUrl
             ? <img src={avatarUrl} alt={username} className="w-full h-full object-cover" />
@@ -117,15 +117,15 @@ export function CreatePost({ username, avatarUrl }: Props) {
           {/* Footer */}
           <div
             className="flex items-center justify-between pt-3"
-            style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)' }}
+            style={{ borderTop: '0.5px solid #ffffff0d' }}
           >
             <div className="flex items-center gap-1.5">
               {/* Photo */}
               <button
                 type="button"
                 onClick={() => imageRef.current?.click()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
-                style={{ color: '#888', border: '0.5px solid rgba(255,255,255,0.08)' }}
+                className="flex items-center gap-1.5 px-3 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
+                style={{ color: '#888', border: '0.5px solid #ffffff10', height: 30 }}
               >
                 <ImageIcon size={13} />
                 Photo
@@ -142,8 +142,8 @@ export function CreatePost({ username, avatarUrl }: Props) {
               <button
                 type="button"
                 onClick={() => audioRef.current?.click()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
-                style={{ color: '#888', border: '0.5px solid rgba(255,255,255,0.08)' }}
+                className="flex items-center gap-1.5 px-3 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
+                style={{ color: '#888', border: '0.5px solid #ffffff10', height: 30 }}
               >
                 <Music size={13} />
                 Track
@@ -159,8 +159,8 @@ export function CreatePost({ username, avatarUrl }: Props) {
               {/* Tag */}
               <button
                 type="button"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
-                style={{ color: '#888', border: '0.5px solid rgba(255,255,255,0.08)' }}
+                className="flex items-center gap-1.5 px-3 rounded-[9px] text-xs font-medium transition-all hover:bg-white/[0.04]"
+                style={{ color: '#888', border: '0.5px solid #ffffff10', height: 30 }}
               >
                 <Tag size={13} />
                 Tag
@@ -174,8 +174,8 @@ export function CreatePost({ username, avatarUrl }: Props) {
             <button
               type="submit"
               disabled={loading || uploading || (!content.trim() && !mediaUrl)}
-              className="text-sm font-medium px-5 py-2 transition-colors disabled:opacity-40 text-white"
-              style={{ background: '#7c6dfa', borderRadius: 9 }}
+              className="flex items-center text-sm font-medium px-5 transition-colors disabled:opacity-40 text-white"
+              style={{ background: '#7c6dfa', borderRadius: 9, height: 30 }}
             >
               {loading ? 'Publication...' : 'Publier'}
             </button>

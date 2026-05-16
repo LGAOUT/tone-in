@@ -6,22 +6,117 @@ import { createClient } from '@/lib/supabase/client'
 import { updateProfile } from '@/app/auth/actions'
 import { ChangePasswordForm } from '@/components/profile/ChangePasswordForm'
 import type { Profile } from '@/types'
+import { ChevronDown, Check, Camera } from 'lucide-react'
 
 const ROLES = [
-  { value: 'musician', label: '🎸 Musicien' },
-  { value: 'producer', label: '🎛️ Producteur' },
-  { value: 'beatmaker', label: '🥁 Beatmaker' },
-  { value: 'songwriter', label: '✍️ Songwriter' },
-  { value: 'teacher', label: '🎓 Professeur' },
-  { value: 'learner', label: '📚 Apprenant' },
+  { value: 'musician',    label: 'Musicien' },
+  { value: 'producer',    label: 'Producteur' },
+  { value: 'beatmaker',   label: 'Beatmaker' },
+  { value: 'songwriter',  label: 'Songwriter' },
+  { value: 'teacher',     label: 'Professeur' },
+  { value: 'learner',     label: 'Apprenant' },
 ]
 
 const BADGES = [
-  { value: 'beginner', label: 'Débutant' },
-  { value: 'intermediate', label: 'Intermédiaire' },
-  { value: 'advanced', label: 'Avancé' },
-  { value: 'expert', label: 'Expert' },
+  { value: 'beginner',      label: 'Débutant' },
+  { value: 'intermediate',  label: 'Intermédiaire' },
+  { value: 'advanced',      label: 'Avancé' },
+  { value: 'expert',        label: 'Expert' },
 ]
+
+// ── Shared input style ──
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: '#0f0f0f',
+  border: '0.5px solid #ffffff10',
+  borderRadius: 12,
+  padding: '11px 14px',
+  color: '#e8e4dc',
+  fontSize: 14,
+  outline: 'none',
+  transition: 'border-color .15s ease',
+}
+
+type FieldSelectProps = {
+  name: string
+  value: string
+  onChange: (v: string) => void
+  options: { value: string; label: string }[]
+  placeholder?: string
+}
+
+function FieldSelect({ name, value, onChange, options, placeholder }: FieldSelectProps) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const selected = options.find(o => o.value === value)
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
+  return (
+    <div className="relative" ref={ref}>
+      <input type="hidden" name={name} value={value} />
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between text-sm transition-all"
+        style={{
+          ...inputStyle,
+          padding: '11px 14px',
+          color: selected ? '#e8e4dc' : '#555',
+          border: `0.5px solid ${open ? '#7c6dfa40' : '#ffffff10'}`,
+          cursor: 'pointer',
+          textAlign: 'left',
+        }}
+      >
+        <span>{selected?.label ?? placeholder ?? 'Choisir...'}</span>
+        <ChevronDown
+          size={14}
+          style={{
+            color: open ? '#9d91fb' : '#555',
+            transform: open ? 'rotate(180deg)' : 'rotate(0)',
+            transition: 'transform .15s ease',
+            flexShrink: 0,
+          }}
+        />
+      </button>
+
+      {open && (
+        <div
+          className="absolute left-0 right-0 top-full mt-1.5 py-1 z-20 rounded-[12px] shadow-xl overflow-hidden"
+          style={{ background: '#1a1a1a', border: '0.5px solid #ffffff10' }}
+        >
+          {options.map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => { onChange(opt.value); setOpen(false) }}
+              className="flex items-center justify-between w-full px-4 py-2.5 text-[13px] transition-colors text-left"
+              style={{ color: value === opt.value ? '#9d91fb' : '#888' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#ffffff08')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              {opt.label}
+              {value === opt.value && <Check size={12} style={{ color: '#9d91fb' }} />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  color: '#555',
+  marginBottom: 6,
+}
 
 export default function EditProfilePage() {
   const router = useRouter()
@@ -31,6 +126,8 @@ export default function EditProfilePage() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [avatarUrl, setAvatarUrl] = useState('')
+  const [roleValue, setRoleValue] = useState('')
+  const [badgeValue, setBadgeValue] = useState('beginner')
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -42,7 +139,12 @@ export default function EditProfilePage() {
         .select('*')
         .eq('id', data.user.id)
         .single()
-      if (p) { setProfile(p); setAvatarUrl(p.avatar_url ?? '') }
+      if (p) {
+        setProfile(p)
+        setAvatarUrl(p.avatar_url ?? '')
+        setRoleValue(p.role ?? '')
+        setBadgeValue(p.badge_level ?? 'beginner')
+      }
       setLoading(false)
     })
   }, [router])
@@ -79,35 +181,53 @@ export default function EditProfilePage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <p className="text-zinc-400">Chargement...</p>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a0a0a' }}>
+      <p className="text-sm" style={{ color: '#555' }}>Chargement...</p>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-lg mx-auto px-4 py-8">
-        <h1 className="text-xl font-bold mb-8">Modifier mon profil</h1>
+    <div className="min-h-screen" style={{ background: '#0a0a0a', color: '#e8e4dc' }}>
+      <div className="max-w-lg mx-auto px-4 py-8 pb-12">
+        <h1 className="text-[20px] font-medium mb-8" style={{ color: '#e8e4dc' }}>
+          Modifier mon profil
+        </h1>
 
-        {/* Avatar */}
+        {/* ── Avatar ── */}
         <div className="flex items-center gap-4 mb-8">
           <div
-            className="w-20 h-20 rounded-full bg-zinc-800 overflow-hidden cursor-pointer flex items-center justify-center"
+            className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-2xl font-bold relative cursor-pointer group"
+            style={{ background: '#2a1f5a', border: '0.5px solid #7c6dfa40', color: '#9d91fb' }}
             onClick={() => fileRef.current?.click()}
           >
             {avatarUrl ? (
               <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-2xl">🎵</span>
+              (profile?.full_name || profile?.username || '?').charAt(0).toUpperCase()
             )}
+            <div
+              className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ background: 'rgba(0,0,0,0.5)' }}
+            >
+              <Camera size={18} className="text-white" />
+            </div>
           </div>
+
           <div>
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="bg-zinc-800 hover:bg-zinc-700 text-sm px-4 py-2 rounded-xl transition-colors"
+              className="text-[13px] px-4 rounded-[9px] transition-all"
+              style={{
+                height: 34,
+                background: '#1a1a1a',
+                border: '0.5px solid #ffffff10',
+                color: '#888',
+              }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = '#ffffff1e'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = '#ffffff10'}
             >
-              {uploading ? 'Upload...' : 'Changer la photo'}
+              {uploading ? 'Envoi...' : 'Changer la photo'}
             </button>
             <input
               ref={fileRef}
@@ -120,72 +240,128 @@ export default function EditProfilePage() {
         </div>
 
         <form action={handleSubmit} className="space-y-5">
+          {/* Nom complet */}
           <div>
-            <label className="text-zinc-400 text-sm mb-1.5 block">Nom complet</label>
-            <input name="full_name" type="text" defaultValue={profile?.full_name ?? ''}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500 transition-colors" />
+            <label style={labelStyle}>Nom complet</label>
+            <input
+              name="full_name"
+              type="text"
+              defaultValue={profile?.full_name ?? ''}
+              style={inputStyle}
+              placeholder="Ton nom..."
+              onFocus={e => (e.currentTarget.style.borderColor = '#7c6dfa40')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#ffffff10')}
+            />
           </div>
 
+          {/* Username */}
           <div>
-            <label className="text-zinc-400 text-sm mb-1.5 block">Nom d&apos;utilisateur</label>
-            <input name="username" type="text" required defaultValue={profile?.username ?? ''}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500 transition-colors" />
+            <label style={labelStyle}>Nom d&apos;utilisateur</label>
+            <input
+              name="username"
+              type="text"
+              required
+              defaultValue={profile?.username ?? ''}
+              style={inputStyle}
+              placeholder="@handle"
+              onFocus={e => (e.currentTarget.style.borderColor = '#7c6dfa40')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#ffffff10')}
+            />
           </div>
 
+          {/* Bio */}
           <div>
-            <label className="text-zinc-400 text-sm mb-1.5 block">Bio</label>
-            <textarea name="bio" rows={3} defaultValue={profile?.bio ?? ''}
+            <label style={labelStyle}>Bio</label>
+            <textarea
+              name="bio"
+              rows={3}
+              defaultValue={profile?.bio ?? ''}
               placeholder="Parle de toi, de ton style, de tes influences..."
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors resize-none" />
+              className="resize-none focus:outline-none transition-all"
+              style={{ ...inputStyle, padding: '11px 14px' }}
+              onFocus={e => (e.currentTarget.style.borderColor = '#7c6dfa40')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#ffffff10')}
+            />
           </div>
 
+          {/* Rôle — custom dropdown */}
           <div>
-            <label className="text-zinc-400 text-sm mb-1.5 block">Rôle</label>
-            <select name="role" defaultValue={profile?.role ?? ''}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500 transition-colors">
-              <option value="">Choisis ton rôle</option>
-              {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-            </select>
+            <label style={labelStyle}>Rôle</label>
+            <FieldSelect
+              name="role"
+              value={roleValue}
+              onChange={setRoleValue}
+              options={ROLES}
+              placeholder="Choisis ton rôle"
+            />
           </div>
 
+          {/* Niveau — custom dropdown */}
           <div>
-            <label className="text-zinc-400 text-sm mb-1.5 block">Niveau</label>
-            <select name="badge_level" defaultValue={profile?.badge_level ?? 'beginner'}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500 transition-colors">
-              {BADGES.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
-            </select>
+            <label style={labelStyle}>Niveau</label>
+            <FieldSelect
+              name="badge_level"
+              value={badgeValue}
+              onChange={setBadgeValue}
+              options={BADGES}
+              placeholder="Choisis ton niveau"
+            />
           </div>
 
+          {/* Skills */}
           <div>
-            <label className="text-zinc-400 text-sm mb-1.5 block">
-              Compétences <span className="text-zinc-500">(séparées par des virgules)</span>
+            <label style={labelStyle}>
+              Compétences{' '}
+              <span style={{ color: '#444' }}>(séparées par des virgules)</span>
             </label>
-            <input name="skills" type="text" defaultValue={profile?.skills?.join(', ') ?? ''}
+            <input
+              name="skills"
+              type="text"
+              defaultValue={profile?.skills?.join(', ') ?? ''}
               placeholder="Mixage, Ableton, Guitare, Trap..."
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors" />
+              style={inputStyle}
+              onFocus={e => (e.currentTarget.style.borderColor = '#7c6dfa40')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#ffffff10')}
+            />
           </div>
 
+          {/* Site web */}
           <div>
-            <label className="text-zinc-400 text-sm mb-1.5 block">Site web</label>
-            <input name="website_url" type="url" defaultValue={profile?.website_url ?? ''}
+            <label style={labelStyle}>Site web</label>
+            <input
+              name="website_url"
+              type="url"
+              defaultValue={profile?.website_url ?? ''}
               placeholder="https://..."
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors" />
+              style={inputStyle}
+              onFocus={e => (e.currentTarget.style.borderColor = '#7c6dfa40')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#ffffff10')}
+            />
           </div>
 
+          {/* Error */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
-              <p className="text-red-400 text-sm">{error}</p>
+            <div
+              className="px-4 py-3 rounded-[12px]"
+              style={{ background: 'rgba(239,68,68,0.08)', border: '0.5px solid rgba(239,68,68,0.2)' }}
+            >
+              <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
 
-          <button type="submit" disabled={saving}
-            className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-medium py-3 rounded-xl transition-colors">
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full text-sm font-medium text-white transition-opacity disabled:opacity-40"
+            style={{ background: '#7c6dfa', borderRadius: 10, height: 44 }}
+          >
             {saving ? 'Sauvegarde...' : 'Sauvegarder'}
           </button>
         </form>
 
-        {/* Mot de passe — EN DEHORS du form principal */}
-        <div className="border-t border-zinc-800 mt-8 pt-8">
+        {/* ── Change password ── */}
+        <div className="mt-8 pt-8" style={{ borderTop: '0.5px solid #ffffff0a' }}>
           <ChangePasswordForm />
         </div>
       </div>

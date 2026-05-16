@@ -79,12 +79,12 @@ export function AppNav({ currentUserId, username, avatarUrl, maxWidth = '3xl' }:
       {/* ── Desktop navbar ── */}
       <nav
         className="hidden md:block sticky top-0 z-20"
-        style={{ height: 52, background: '#0d0d0d', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}
+        style={{ height: 52, background: '#0d0d0d', borderBottom: '0.5px solid #ffffff0d' }}
       >
         <div className={`${containerClass} mx-auto px-4 h-full flex items-center justify-between gap-6`}>
 
           {/* Zone 1 — Logo */}
-          <Link href="/feed" className="text-sm font-bold shrink-0 tracking-tight" style={{ color: '#e8e4dc' }}>
+          <Link href="/feed" className="text-sm font-medium shrink-0 tracking-tight" style={{ color: '#e8e4dc' }}>
             Tone <span style={{ color: '#7c6dfa' }}>In</span>
           </Link>
 
@@ -95,12 +95,12 @@ export function AppNav({ currentUserId, username, avatarUrl, maxWidth = '3xl' }:
                 key={href}
                 href={href}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-sm font-medium transition-colors',
+                  'flex items-center gap-1.5 h-[34px] px-3 rounded-[9px] text-sm font-medium transition-all',
                   active(href)
                     ? 'text-[#9d91fb]'
-                    : 'text-[#888] hover:text-[#e8e4dc] hover:bg-white/[0.04]'
+                    : 'text-[#444] hover:text-[#888] hover:bg-[#ffffff0a]'
                 )}
-                style={active(href) ? { background: 'rgba(124,109,250,0.094)' } : undefined}
+                style={active(href) ? { background: '#7c6dfa18' } : undefined}
               >
                 <Icon size={14} />
                 {label}
@@ -113,12 +113,14 @@ export function AppNav({ currentUserId, username, avatarUrl, maxWidth = '3xl' }:
             {/* Search pill */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-[10px] text-sm transition-all hover:border-white/[0.12] hover:bg-white/[0.06]"
+              className="flex items-center gap-2 px-3 h-[34px] rounded-[9px] text-sm transition-all"
               style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '0.5px solid rgba(255,255,255,0.08)',
+                background: '#1a1a1a',
+                border: '0.5px solid #ffffff10',
                 color: '#888',
               }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = '#ffffff1e')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = '#ffffff10')}
             >
               <Search size={13} />
               <span className="hidden lg:inline text-[13px]">Rechercher...</span>
@@ -135,13 +137,16 @@ export function AppNav({ currentUserId, username, avatarUrl, maxWidth = '3xl' }:
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setProfileOpen(v => !v)}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded-[10px] transition-colors hover:bg-white/[0.04]"
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-[9px] transition-all"
+                  style={{ color: '#888' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#ffffff0a')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <div
-                    className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-[10px] font-bold"
+                    className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-[10px] font-bold"
                     style={{
-                      background: 'rgba(124,109,250,0.15)',
-                      border: '0.5px solid rgba(124,109,250,0.3)',
+                      background: '#2a1f5a',
+                      border: '0.5px solid #7c6dfa40',
                       color: '#9d91fb',
                     }}
                   >
@@ -150,14 +155,14 @@ export function AppNav({ currentUserId, username, avatarUrl, maxWidth = '3xl' }:
                       : username.charAt(0).toUpperCase()
                     }
                   </div>
-                  <span className="hidden lg:inline text-[13px]" style={{ color: '#888' }}>@{username}</span>
+                  <span className="hidden lg:inline text-[13px]">@{username}</span>
                   <ChevronDown size={11} className="hidden lg:block" style={{ color: '#444' }} />
                 </button>
 
                 {profileOpen && (
                   <div
                     className="absolute right-0 top-full mt-2 w-44 py-1 rounded-2xl shadow-2xl z-30"
-                    style={{ background: '#141414', border: '0.5px solid rgba(255,255,255,0.08)' }}
+                    style={{ background: '#141414', border: '0.5px solid #ffffff10' }}
                   >
                     <Link
                       href={`/profile/${username}`}
@@ -188,7 +193,7 @@ export function AppNav({ currentUserId, username, avatarUrl, maxWidth = '3xl' }:
       {/* ── Mobile bottom tab bar ── */}
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-20 flex items-center justify-around px-2"
-        style={{ height: 60, background: '#0d0d0d', borderTop: '0.5px solid rgba(255,255,255,0.08)' }}
+        style={{ height: 60, background: '#0d0d0d', borderTop: '0.5px solid #ffffff0d' }}
       >
         <Link
           href="/feed"
@@ -210,7 +215,7 @@ export function AppNav({ currentUserId, username, avatarUrl, maxWidth = '3xl' }:
 
         {/* Create button — center */}
         <button
-          className="flex items-center justify-center flex-shrink-0 rounded-[12px] transition-colors"
+          className="flex items-center justify-center flex-shrink-0 rounded-[11px] transition-opacity active:opacity-70"
           style={{ width: 44, height: 44, background: '#7c6dfa', color: 'white' }}
         >
           <Plus size={22} />

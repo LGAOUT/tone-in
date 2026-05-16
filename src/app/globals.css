@@ -14,3 +14,30 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* Reusable hover card — works in Server Components (no JS handlers needed) */
+.hover-card {
+  transition: all .15s ease;
+}
+.hover-card:hover {
+  background: #181818 !important;
+  border-color: #ffffff1e !important;
+  transform: translateY(-1px);
+}
+
+/* Violet link → white on hover */
+.hover-violet {
+  transition: color .15s ease;
+}
+.hover-violet:hover {
+  color: #e8e4dc !important;
+}
+
+/* Ghost button border brightens on hover */
+.hover-border {
+  transition: border-color .15s ease, opacity .15s ease;
+}
+.hover-border:hover {
+  border-color: #ffffff1e !important;
+  opacity: 0.85;
+}

@@ -27,12 +27,12 @@ type Props = {
 
 const ROLES = [
   { value: '', label: 'Tous' },
-  { value: 'musician', label: '🎸 Musicien' },
-  { value: 'producer', label: '🎛️ Producteur' },
-  { value: 'beatmaker', label: '🥁 Beatmaker' },
-  { value: 'songwriter', label: '✍️ Songwriter' },
-  { value: 'teacher', label: '🎓 Professeur' },
-  { value: 'learner', label: '📚 Apprenant' },
+  { value: 'musician', label: 'Musicien' },
+  { value: 'producer', label: 'Producteur' },
+  { value: 'beatmaker', label: 'Beatmaker' },
+  { value: 'songwriter', label: 'Songwriter' },
+  { value: 'teacher', label: 'Professeur' },
+  { value: 'learner', label: 'Apprenant' },
 ]
 
 const BADGES = [
@@ -42,6 +42,31 @@ const BADGES = [
   { value: 'advanced', label: 'Avancé' },
   { value: 'expert', label: 'Expert' },
 ]
+
+const pillBase: React.CSSProperties = {
+  height: 30,
+  border: '0.5px solid #ffffff10',
+  borderRadius: 9,
+  padding: '0 12px',
+  fontSize: 12,
+  fontWeight: 500,
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+  transition: 'all .15s ease',
+  background: 'transparent',
+}
+
+const pillActive: React.CSSProperties = {
+  ...pillBase,
+  background: '#7c6dfa18',
+  border: '0.5px solid #7c6dfa30',
+  color: '#9d91fb',
+}
+
+const pillInactive: React.CSSProperties = {
+  ...pillBase,
+  color: '#444',
+}
 
 export function ExploreClient({
   initialProfiles,
@@ -90,72 +115,114 @@ export function ExploreClient({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Découvrir</h1>
+      {/* Title */}
+      <h1 className="text-[22px] font-medium mb-5" style={{ color: '#e8e4dc' }}>Découvrir</h1>
 
-      {/* Barre de recherche */}
-      <form onSubmit={handleSearch} className="relative mb-5">
-        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+      {/* Search bar */}
+      <form onSubmit={handleSearch} className="relative mb-4">
+        <Search
+          size={15}
+          className="absolute left-4 top-1/2 -translate-y-1/2"
+          style={{ color: '#555' }}
+        />
         <input
           value={q}
           onChange={e => setQ(e.target.value)}
           placeholder="Rechercher un musicien, beatmaker, producteur..."
-          className="w-full bg-zinc-900 border border-zinc-700 rounded-2xl pl-11 pr-12 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors text-sm"
+          className="w-full pl-10 pr-10 text-sm focus:outline-none transition-all"
+          style={{
+            background: '#141414',
+            border: '0.5px solid #ffffff10',
+            borderRadius: 16,
+            padding: '11px 40px',
+            color: '#e8e4dc',
+            height: 44,
+          }}
+          onFocus={e => (e.currentTarget.style.borderColor = '#7c6dfa40')}
+          onBlur={e => (e.currentTarget.style.borderColor = '#ffffff10')}
         />
         {q && (
           <button
             type="button"
             onClick={() => { setQ(''); startTransition(() => router.push(buildUrl('', role, badge))) }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+            className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
+            style={{ color: '#555' }}
           >
-            <X size={16} />
+            <X size={14} />
           </button>
         )}
       </form>
 
-      {/* Filtres rôle */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide">
+      {/* Role filter pills */}
+      <div className="flex gap-1.5 overflow-x-auto pb-2 mb-2" style={{ scrollbarWidth: 'none' }}>
         {ROLES.map(r => (
           <button
             key={r.value}
             onClick={() => handleRole(r.value)}
-            className={`flex-shrink-0 text-sm px-4 py-2 rounded-xl border transition-colors ${
-              role === r.value
-                ? 'bg-violet-600 border-violet-600 text-white'
-                : 'border-zinc-700 text-zinc-400 hover:border-zinc-500'
-            }`}
+            style={role === r.value ? pillActive : pillInactive}
+            onMouseEnter={e => {
+              if (role !== r.value) {
+                e.currentTarget.style.color = '#888'
+                e.currentTarget.style.borderColor = '#ffffff1e'
+                e.currentTarget.style.background = '#ffffff0a'
+              }
+            }}
+            onMouseLeave={e => {
+              if (role !== r.value) {
+                e.currentTarget.style.color = '#444'
+                e.currentTarget.style.borderColor = '#ffffff10'
+                e.currentTarget.style.background = 'transparent'
+              }
+            }}
           >
             {r.label}
           </button>
         ))}
       </div>
 
-      {/* Filtres niveau */}
-      <div className="flex gap-2 overflow-x-auto pb-3 mb-6 scrollbar-hide">
+      {/* Badge filter pills */}
+      <div className="flex gap-1.5 overflow-x-auto pb-3 mb-5" style={{ scrollbarWidth: 'none' }}>
         {BADGES.map(b => (
           <button
             key={b.value}
             onClick={() => handleBadge(b.value)}
-            className={`flex-shrink-0 text-sm px-4 py-2 rounded-xl border transition-colors ${
-              badge === b.value
-                ? 'bg-zinc-100 border-zinc-100 text-black'
-                : 'border-zinc-700 text-zinc-400 hover:border-zinc-500'
-            }`}
+            style={badge === b.value ? pillActive : pillInactive}
+            onMouseEnter={e => {
+              if (badge !== b.value) {
+                e.currentTarget.style.color = '#888'
+                e.currentTarget.style.borderColor = '#ffffff1e'
+                e.currentTarget.style.background = '#ffffff0a'
+              }
+            }}
+            onMouseLeave={e => {
+              if (badge !== b.value) {
+                e.currentTarget.style.color = '#444'
+                e.currentTarget.style.borderColor = '#ffffff10'
+                e.currentTarget.style.background = 'transparent'
+              }
+            }}
           >
             {b.label}
           </button>
         ))}
       </div>
 
-      {/* Résultats */}
-      <div className={`transition-opacity ${isPending ? 'opacity-50' : 'opacity-100'}`}>
+      {/* Results */}
+      <div className={`transition-opacity duration-150 ${isPending ? 'opacity-40' : 'opacity-100'}`}>
         {hasFilters && (
           <div className="flex items-center justify-between mb-4">
-            <p className="text-zinc-400 text-sm">
+            <span
+              className="text-[11px]"
+              style={{ color: '#2e2e2e', fontFamily: 'var(--font-dm-mono)' }}
+            >
               {initialProfiles.length} résultat{initialProfiles.length !== 1 ? 's' : ''}
-            </p>
+            </span>
             <button
               onClick={handleClear}
-              className="text-violet-400 hover:text-violet-300 text-sm transition-colors"
+              className="text-[12px] transition-colors"
+              style={{ color: '#9d91fb' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#e8e4dc')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#9d91fb')}
             >
               Effacer les filtres
             </button>
@@ -165,11 +232,11 @@ export function ExploreClient({
         {initialProfiles.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-4xl mb-4">🔍</p>
-            <p className="text-zinc-400">Aucun profil trouvé.</p>
-            <p className="text-zinc-500 text-sm mt-1">Essaie d&apos;autres mots-clés ou filtres.</p>
+            <p className="text-sm mb-1" style={{ color: '#888' }}>Aucun profil trouvé.</p>
+            <p className="text-[12px]" style={{ color: '#555' }}>Essaie d&apos;autres mots-clés ou filtres.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {initialProfiles.map(profile => (
               <ProfileCard
                 key={profile.id}

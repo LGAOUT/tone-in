@@ -85,8 +85,8 @@ export function PostCard({ post, currentUserId, isLiked, isFollowing }: Props) {
 
   return (
     <div
-      className="rounded-2xl p-4 mb-3"
-      style={{ background: '#141414', border: '0.5px solid rgba(255,255,255,0.06)' }}
+      className="rounded-2xl mb-3"
+      style={{ background: '#141414', border: '0.5px solid #ffffff10', padding: 18 }}
     >
       {/* ── Header ── */}
       <div className="flex items-start justify-between mb-3">
@@ -189,13 +189,16 @@ export function PostCard({ post, currentUserId, isLiked, isFollowing }: Props) {
         style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)' }}
       >
         <div className="flex items-center gap-4">
-          {/* Like — turns pink */}
+          {/* Like — turns pink with bg/border */}
           <button
             onClick={handleLike}
-            className="flex items-center gap-1.5 text-sm transition-colors"
-            style={{ color: liked ? '#f472b6' : '#888' }}
+            className="flex items-center gap-1.5 text-sm transition-all px-2 py-1 rounded-[7px]"
+            style={liked
+              ? { color: '#e87aaa', background: '#d4537e12', border: '0.5px solid #d4537e20' }
+              : { color: '#888', background: 'transparent', border: '0.5px solid transparent' }
+            }
           >
-            <Heart size={17} fill={liked ? 'currentColor' : 'none'} />
+            <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
             <span>{likes}</span>
           </button>
 

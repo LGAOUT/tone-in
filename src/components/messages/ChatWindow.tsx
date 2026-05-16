@@ -39,7 +39,6 @@ export function ChatWindow({ currentUserId, partnerId, partnerUsername, partnerA
 
     if (data) setMessages(data)
 
-    // Marque comme lus
     await supabase
       .from('messages')
       .update({ read: true })
@@ -102,42 +101,72 @@ export function ChatWindow({ currentUserId, partnerId, partnerUsername, partnerA
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const timeLabel = (date: string) => {
-    return new Date(date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-  }
+  const timeLabel = (date: string) =>
+    new Date(date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 
   return (
     <div className="flex flex-col h-[calc(100vh-56px)]">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800 bg-black flex-shrink-0">
-        <div className="w-9 h-9 rounded-full bg-zinc-700 overflow-hidden">
+      {/* ── Chat header ── */}
+      <div
+        className="flex items-center gap-3 px-4 flex-shrink-0"
+        style={{
+          height: 52,
+          background: '#0d0d0d',
+          borderBottom: '0.5px solid #ffffff0a',
+        }}
+      >
+        <div
+          className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-[11px] font-bold"
+          style={{ background: '#2a1f5a', border: '0.5px solid #7c6dfa40', color: '#9d91fb' }}
+        >
           {partnerAvatar ? (
             <img src={partnerAvatar} alt={partnerUsername} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-sm">🎵</div>
+            partnerUsername.charAt(0).toUpperCase()
           )}
         </div>
-        <span className="text-white font-medium">@{partnerUsername}</span>
+        <span
+          className="text-[14px] font-medium"
+          style={{ color: '#e8e4dc', fontFamily: 'var(--font-dm-mono)' }}
+        >
+          @{partnerUsername}
+        </span>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      {/* ── Messages ── */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
         {messages.length === 0 && (
-          <p className="text-center text-zinc-500 text-sm py-8">
+          <p
+            className="text-center text-[13px] py-8"
+            style={{ color: '#555' }}
+          >
             Commence la conversation avec @{partnerUsername} 👋
           </p>
         )}
+
         {messages.map(msg => {
           const isMe = msg.sender_id === currentUserId
           return (
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs lg:max-w-md px-4 py-2.5 rounded-2xl text-sm ${
-                isMe
-                  ? 'bg-violet-600 text-white rounded-br-sm'
-                  : 'bg-zinc-800 text-zinc-100 rounded-bl-sm'
-              }`}>
+              <div
+                className="max-w-xs lg:max-w-md px-4 py-2.5 text-sm"
+                style={{
+                  background: isMe ? '#7c6dfa' : '#141414',
+                  border: isMe ? 'none' : '0.5px solid #ffffff10',
+                  borderRadius: isMe
+                    ? '16px 16px 4px 16px'
+                    : '16px 16px 16px 4px',
+                  color: isMe ? '#fff' : '#e8e4dc',
+                }}
+              >
                 <p className="leading-relaxed">{msg.content}</p>
-                <p className={`text-xs mt-1 ${isMe ? 'text-violet-300' : 'text-zinc-500'}`}>
+                <p
+                  className="text-[10px] mt-1"
+                  style={{
+                    color: isMe ? 'rgba(255,255,255,0.5)' : '#444',
+                    fontFamily: 'var(--font-dm-mono)',
+                  }}
+                >
                   {timeLabel(msg.created_at)}
                 </p>
               </div>
@@ -147,20 +176,34 @@ export function ChatWindow({ currentUserId, partnerId, partnerUsername, partnerA
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <form onSubmit={sendMessage} className="flex items-center gap-3 px-4 py-3 border-t border-zinc-800 bg-black flex-shrink-0">
+      {/* ── Input bar ── */}
+      <form
+        onSubmit={sendMessage}
+        className="flex items-center gap-2.5 px-4 py-3 flex-shrink-0"
+        style={{ borderTop: '0.5px solid #ffffff0a', background: '#0d0d0d' }}
+      >
         <input
           value={content}
           onChange={e => setContent(e.target.value)}
           placeholder={`Message à @${partnerUsername}...`}
-          className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors"
+          className="flex-1 text-sm focus:outline-none transition-all"
+          style={{
+            background: '#0f0f0f',
+            border: '0.5px solid #ffffff10',
+            borderRadius: 12,
+            padding: '10px 14px',
+            color: '#e8e4dc',
+          }}
+          onFocus={e => (e.currentTarget.style.borderColor = '#7c6dfa40')}
+          onBlur={e => (e.currentTarget.style.borderColor = '#ffffff10')}
         />
         <button
           type="submit"
           disabled={!content.trim() || sending}
-          className="bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white p-2.5 rounded-xl transition-colors flex-shrink-0"
+          className="flex items-center justify-center flex-shrink-0 transition-opacity disabled:opacity-30 text-white"
+          style={{ width: 38, height: 38, background: '#7c6dfa', borderRadius: 10 }}
         >
-          <Send size={18} />
+          <Send size={16} />
         </button>
       </form>
     </div>
