@@ -115,7 +115,71 @@ STRIPE_WEBHOOK_SECRET
 
 ## UI Conventions
 
-- **Dark theme** throughout — black/zinc backgrounds, violet accents for interactive elements.
 - All user-facing labels are in **French**.
 - `cn()` from `src/lib/utils.ts` (clsx + tailwind-merge) is the standard for conditional class composition.
 - Shared UI primitives live in `src/components/ui/` (Badge, AudioPlayer).
+
+### Design system tokens
+
+| Token | Value |
+|---|---|
+| Page background | `#0a0a0a` |
+| Card background | `#141414` |
+| Card hover background | `#181818` |
+| Navbar / chat header | `#0d0d0d` |
+| Player inner | `#0f0f0f` |
+| Dropdown background | `#1a1a1a` |
+| Accent primary | `#7c6dfa` |
+| Accent light / active | `#9d91fb` |
+| Text primary | `#e8e4dc` |
+| Text secondary | `#888` |
+| Text muted | `#555` |
+| Text subtle | `#444` |
+| Text ghost | `#2e2e2e` |
+| Border default | `0.5px solid #ffffff10` |
+| Border hover | `#ffffff1e` |
+| Border focus | `#7c6dfa40` |
+| Card radius | `16px` |
+| Marketplace card radius | `14px` |
+| Button radius | `9–10px` |
+| Small button radius | `7px` |
+| Transition | `all .15s ease` |
+| Card hover lift | `translateY(-1px)` |
+
+### Fonts
+- **DM Sans** — all UI text (loaded via `next/font/google`, CSS var `--font-dm-sans`)
+- **DM Mono** — handles (`@username`), timestamps, BPM, stats, price subtitles (CSS var `--font-dm-mono`)
+
+### Hover effects in Server Components
+Never use `onMouseEnter`/`onMouseLeave` in Server Components. Use the CSS utility classes defined in `globals.css` instead:
+
+| Class | Effect |
+|---|---|
+| `.hover-card` | bg `#181818`, border `#ffffff1e`, `translateY(-1px)` — for clickable cards |
+| `.hover-violet` | color transitions to `#e8e4dc` — for violet links |
+| `.hover-border` | border brightens to `#ffffff1e` + slight opacity — for ghost buttons |
+
+### Custom dropdowns
+**Never use a native `<select>` element anywhere in the app.** Use the `FieldSelect` pattern (see `src/app/profile/edit/page.tsx`) — a button trigger + absolute dropdown menu + hidden `<input>` for form submission. Close on outside click via `useEffect` + `mousedown` listener.
+
+### Avatar style
+Music-role users (`musician`, `producer`, `beatmaker`, `songwriter`): `bg #2a1f5a`, `border #7c6dfa40`, `color #9d91fb`.  
+Other roles: `bg #1e1e1e`, `border #ffffff10`, `color #888`.
+
+### Category badge colors (Marketplace & Masterclasses)
+
+| Category | bg | text | border |
+|---|---|---|---|
+| Mixage / mixing | `#1d9e7514` | `#3dcca0` | `#1d9e7528` |
+| Mastering | `#378add14` | `#7ab8ed` | `#378add28` |
+| Production | `#7c6dfa14` | `#9d91fb` | `#7c6dfa28` |
+| Beatmaking | `#d4537e14` | `#e87aaa` | `#d4537e28` |
+| Songwriting | `#ef9f2714` | `#f5c06a` | `#ef9f2728` |
+
+### Badge level colors
+
+| Level | bg | text | border |
+|---|---|---|---|
+| Débutant | `rgba(124,109,250,0.09)` | `#9d91fb` | `rgba(124,109,250,0.19)` |
+| Intermédiaire | `rgba(29,158,117,0.09)` | `#3dcca0` | `rgba(29,158,117,0.25)` |
+| Pro / Expert | `rgba(212,83,126,0.09)` | `#e87aaa` | `rgba(212,83,126,0.25)` |

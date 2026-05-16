@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation'
 import { logout } from '@/app/auth/actions'
 import { NotificationBell } from '@/components/notifications/NotificationBell'
-import { Home, Users, ShoppingBag, GraduationCap, Search, Plus, MessageCircle, User, ChevronDown, X } from 'lucide-react'
+import { Home, Users, ShoppingBag, GraduationCap, UsersRound, Search, Plus, MessageCircle, User, ChevronDown, X } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
@@ -16,10 +16,9 @@ type Props = {
 }
 
 const desktopNavItems = [
-  { href: '/feed',          label: 'Feed',        icon: Home },
-  { href: '/explore',       label: 'Artistes',    icon: Users },
-  { href: '/marketplace',   label: 'Marketplace', icon: ShoppingBag },
-  { href: '/masterclasses', label: 'Learn',       icon: GraduationCap },
+  { href: '/marketplace',   label: 'Marketplace',   icon: ShoppingBag },
+  { href: '/masterclasses', label: 'Learn',          icon: GraduationCap },
+  { href: '/groups',        label: 'Communautés',    icon: UsersRound },
 ]
 
 export function AppNav({ currentUserId, username, avatarUrl, maxWidth = '3xl' }: Props) {
