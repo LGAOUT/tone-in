@@ -11,6 +11,7 @@ export async function createPost(formData: FormData) {
   const content = formData.get('content') as string
   const media_url = formData.get('media_url') as string
   const media_type = formData.get('media_type') as string
+  const is_private = formData.get('is_private') === 'true'
 
   if (!content && !media_url) return { error: 'Le post ne peut pas être vide' }
 
@@ -19,14 +20,29 @@ export async function createPost(formData: FormData) {
     content: content || null,
     media_url: media_url || null,
     media_type: media_type || null,
+    is_private,
   })
 
   if (error) return { error: error.message }
 
-  // Incrémente posts_count sur le profil
   await supabase.rpc('increment_posts_count', { user_id: user.id })
 
   revalidatePath('/feed')
+  revalidatePath(`/profile`)
+  return { success: true }
+}
+
+export async function deletePost(postId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Non connecté' }
+
+  await supabase.from('posts').delete().eq('id', postId).eq('author_id', user.id)
+
+  await supabase.rpc('decrement_posts_count', { user_id: user.id })
+
+  revalidatePath('/feed')
+  revalidatePath('/profile')
   return { success: true }
 }
 

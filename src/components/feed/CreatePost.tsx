@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createPost } from '@/app/posts/actions'
-import { ImageIcon, Music, Tag, X } from 'lucide-react'
+import { ImageIcon, Music, X, Globe, Lock, Tag } from 'lucide-react'
 
 type Props = {
   username: string
@@ -16,6 +16,7 @@ export function CreatePost({ username, avatarUrl }: Props) {
   const [mediaName, setMediaName] = useState('')
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isPrivate, setIsPrivate] = useState(false)
   const imageRef = useRef<HTMLInputElement>(null)
   const audioRef = useRef<HTMLInputElement>(null)
 
@@ -51,9 +52,11 @@ export function CreatePost({ username, avatarUrl }: Props) {
     setLoading(true)
     formData.set('media_url', mediaUrl)
     formData.set('media_type', mediaType)
+    formData.set('is_private', isPrivate.toString())
     await createPost(formData)
     setContent('')
     clearMedia()
+    setIsPrivate(false)
     setLoading(false)
   }
 
@@ -171,12 +174,27 @@ export function CreatePost({ username, avatarUrl }: Props) {
               )}
             </div>
 
+            {/* Toggle privé/public */}
+              <button
+                type="button"
+                onClick={() => setIsPrivate(!isPrivate)}
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-all"
+                style={{
+                  background: isPrivate ? 'rgba(124,109,250,0.1)' : 'transparent',
+                  color: isPrivate ? '#9d91fb' : '#555',
+                  border: isPrivate ? '0.5px solid rgba(124,109,250,0.3)' : '0.5px solid transparent',
+                }}
+                >
+                {isPrivate ? <Lock size={13} /> : <Globe size={13} />}
+                {isPrivate ? 'Abonnés' : 'Public'}
+              </button>
+
             <button
               type="submit"
               disabled={loading || uploading || (!content.trim() && !mediaUrl)}
               className="flex items-center text-sm font-medium px-5 transition-colors disabled:opacity-40 text-white"
               style={{ background: '#7c6dfa', borderRadius: 9, height: 30 }}
-            >
+              >
               {loading ? 'Publication...' : 'Publier'}
             </button>
           </div>

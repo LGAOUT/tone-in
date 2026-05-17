@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { ProfileFeed } from '@/components/profile/ProfileFeed'
 import { notFound } from 'next/navigation'
 import { Badge } from '@/components/ui/Badge'
 import { ROLE_LABELS } from '@/types'
@@ -28,7 +29,18 @@ export default async function ProfilePage({
   const { data: currentProfile } = user
     ? await supabase.from('profiles').select('username, avatar_url').eq('id', user.id).single()
     : { data: null }
+  const { data: posts } = await supabase
+    .from('posts')
+    .select('id, content, media_url, media_type, is_private, likes_count, comments_count, created_at')
+    .eq('author_id', profile.id)
+    .order('created_at', { ascending: false })
 
+  const { data: userLikes } = await supabase
+    .from('post_likes')
+    .select('post_id')
+    .eq('user_id', user?.id ?? '')
+
+  const likedPostIds = userLikes?.map(l => l.post_id) ?? []
   const MUSIC_ROLES = ['musician', 'producer', 'beatmaker', 'songwriter']
   const isMusicRole = MUSIC_ROLES.includes(profile.role ?? '')
 
@@ -187,6 +199,19 @@ export default async function ProfilePage({
             {profile.website_url.replace(/^https?:\/\//, '')}
           </a>
         )}
+
+        {/* Séparateur */}
+        <div className="mt-6 pt-6" style={{ borderTop: '0.5px solid #ffffff10' }}>
+          <p className="text-xs uppercase tracking-wider mb-4" style={{ color: '#444' }}>
+            Posts
+          </p>
+          <ProfileFeed
+            posts={posts ?? []}
+            currentUserId={user?.id ?? ''}
+            profileUserId={profile.id}
+            likedPostIds={likedPostIds}
+          />
+        </div>
 
         {/* ── Owner — link to services ── */}
         {isOwner && (
